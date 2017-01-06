@@ -1,0 +1,8 @@
+#!/bin/bash
+# MUST RUN IN DIRECTORY WITH FASTQCSECTIONGETTER OUTPUT FILES
+/Users/conradizydorczyk/grad_school_data/scripts/FastqcSectionCombiner.py -v -i /Users/conradizydorczyk/grad_school_data/primary_project/Fastqc/Fastqc_raw/fastqcsectiongetter_quality/quality_file_list.txt -o /Users/conradizydorczyk/grad_school_data/primary_project/Fastqc/Fastqc_raw/fastqcsectiongetter_quality/quality.tsv
+
+#since input is inside python, cannot use bash wildcards*** so use a text file with names of files instead
+#file list must have each file name on a new line, not all on one line***
+#Idk why the file_index I have currently (October 2016) is space delimited but works...
+#have to run in directory containing input files (?)
