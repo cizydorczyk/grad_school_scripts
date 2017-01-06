@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
+#must run this in directory with all the files...
+do
+
+	#run trimmomatic...
+	#java -jar /home/conrad/Software/Trimmomatic-0.36/trimmomatic-0.36.jar PE $i"_R1.fastq" $i"_R2.fastq" $i"_R1_trimmed.fastq" $i"_R1_trimmed_unpaired.fastq" $i"_R2_trimmed.fastq" $i"_R2_trimmed_unpaired.fastq" #commands here...also not sure why -basein $i"_R1.fastq" and -baseout $i"_R1_trimmed.fastq" didn't work...probably something with I not specifying them properly...
+
+done

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#var1=$(ls *.fastq) this isn't listing files but file names...the for loop doesn't go through files but through a string; the string does NOT contain the actual files.
+
+for i in $(cat /Temp_Data/160902_NextSeq/file_index)
+do
+	echo "Starting Preprocessing for "$i
+	
+	sga preprocess --pe-mode 1 $i"_R1.fastq" $i"_R2.fastq" > $i"_preprocessed.fastq" 
+
+	echo "Finished Preprocessing for "$i
+
+	echo "Starting Indexing for "$i
+
+	sga index -a ropebwt -t 8 --no-reverse $i"_preprocessed.fastq"
+
+	echo "Finished Indexing for "$i
+
+	echo "Starting Preqc for "$i
+
+	sga preqc -t 8 $i"_preprocessed.fastq" > $i"_genome.preqc"
+
+	echo "Finished Preqc for "$i
+
+
+done
+
+#Create report for all files together:
+
+#echo "Creating report for all files"
+	
+#sga-preqc-report.py *.preqc
+
+#echo "Finished report"

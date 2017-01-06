@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
+
+do
+	/home/conrad/My_Scripts/FastqcSectionGetter.py -s quality -i /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastqc/fastqc_output_trimmomatic_v2/output_unzipped/$i"_R1_trimmed_fastqc"/fastqc_data.txt -o /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastqc/fastqc_output_trimmomatic_v2/quality/$i"_R1_trimmed_quality.txt"
+	/home/conrad/My_Scripts/FastqcSectionGetter.py -s quality -i /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastqc/fastqc_output_trimmomatic_v2/output_unzipped/$i"_R2_trimmed_fastqc"/fastqc_data.txt -o /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastqc/fastqc_output_trimmomatic_v2/quality/$i"_R2_trimmed_quality.txt"
+done
+
+
+#/home/conrad/My_Scripts/FastqcSectionGetter.py -s quality -i fastqc_data.txt -v works to run the command...
+#Outputting a directory doesn't work...
+#inputting a path works...
+#Specifying path to specicif output file works...
+#Essentially loop twice...to specify names properly...I ran it in 2 separate loops, but Julio told me to just put the 2nd run into the first loop...hopefully it works but I never tried.

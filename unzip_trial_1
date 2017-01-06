@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
+do
+
+	#tar -zxvf $i"_R1_fastqc.zip" -C /home/conrad/Data/160902_NextSeq/22_eradicated_fastqc_output
+	unzip $i"_R1_trimmed_fastqc.zip" -d /home/conrad/Data/160902_NextSeq/Trevors_strains/fastqc_output_trimmomatic/Unzipped_fastqc_reports
+	unzip $i"_R2_trimmed_fastqc.zip" -d /home/conrad/Data/160902_NextSeq/Trevors_strains/fastqc_output_trimmomatic/Unzipped_fastqc_reports
+done
+
+#for tar.gz files; if .zip file:
+
+# unzip <filename> -d <directory to unzip to>

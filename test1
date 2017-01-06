@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for i in $(cat /Temp_Data/160902_NextSeq/file_index)
+
+do
+
+	#run trimmomatic...
+	echo $i
+
+done

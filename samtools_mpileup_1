@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
+
+do
+
+  /home/conrad/Software/samtools-1.3.1/samtools mpileup -g -f /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/PAO1_genome/PAO1genome.fasta /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/Alignments/samtools_bam_files/Sorted_Indexed/$i"_PAO1_aln.sorted.bam" > /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/Alignments/genotype_likelihood_files/bcf_files/$i"_PAO1_aln.bcf"
+
+done
