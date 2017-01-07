@@ -1,7 +1,7 @@
 from sys import argv
 # Specify input fastqc data file, fastq file with reads, and output file
 # in the command line
-script, fastqcdatafile, fastqfile, outputfastafile, logfile = argv
+script, fastqcdatafile, fastqfile, outputfastafile = argv
 
 # function to get list of kmers from fastqc_data.txt file:
 def get_kmers(fastqcdatafile):
