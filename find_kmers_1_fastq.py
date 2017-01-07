@@ -1,7 +1,7 @@
 from sys import argv
 # Specify input fastqc data file, fastq file with reads, and output file
 # in the command line
-script, fastqcdatafile, fastqfile, outputfastafile = argv
+script, fastqcdatafile, fastqfile, outputfastafile, logfile = argv
 
 # function to get list of kmers from fastqc_data.txt file:
 def get_kmers(fastqcdatafile):
@@ -27,6 +27,7 @@ print kmers
 outfile = open(outputfastafile, 'w')
 outfile.close()
 
+
 # Open output file for appending
 outfile = open(outputfastafile, 'a')
 
@@ -50,18 +51,3 @@ for lnum, line in enumerate(list2):
             list3.append(line)
 outfile.close()
 print "Reads with kmers:", count
-
-
-
-#prevline = ""
-#with open(fastqfile, 'r') as infile:
-#    sequence_list1 = []
-#    for line in infile:
-#        for i in kmers:
-#            if i in line and line not in sequence_list1:
-#                sequence_list1.append(line)
-#                outfile.write(">"+prevline)
-#                outfile.write(line)
-#        prevline = line
-#outfile.close()
-#print "Done"
