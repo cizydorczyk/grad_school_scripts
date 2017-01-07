@@ -37,18 +37,19 @@ gg = open(fastqfile, 'r')
 list2 = list(gg)
 gg.close()
 
+count = 0
 list3 = []
 for lnum, line in enumerate(list2):
     for i in kmers:
         if i in line and line not in list3:
-            list3.append(line)
+            count += 1
             outfile.write(list2[lnum-1])
             outfile.write(list2[lnum])
             outfile.write(list2[lnum+1])
             outfile.write(list2[lnum+2])
             list3.append(line)
 outfile.close()
-print "Done"
+print "Reads with kmers:", count
 
 
 
