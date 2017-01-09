@@ -119,6 +119,7 @@ def byPos_key(variant):
 # Creates list of high quality SNP positions by filtering all SNPs using HQS criteria
 # at top of this file:
 def hq_pos_list(variantlist, indel_list):
+    print "Identifying high quality positions in" + filename
     # Need to make this file using bash and touch beforehand in desired directory:
     with open(totalhqposlist, 'a') as infile:
         for variant in variantlist:
@@ -130,8 +131,7 @@ def hq_pos_list(variantlist, indel_list):
                     variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable(
                     [range(indel - HQS_MIN_DIST, indel + HQS_MIN_DIST + 1) for indel in indel_list]):
                 infile.write(str(variant.pos) + "\t")
-                infile.write(str(variant.ref) + "\t")
-                infile.write(str(variant.alt) + "\n")
+                infile.write(str(variant.ref) + "\n")
 
 
 hqposlist = hq_pos_list(variantlist, indel_list)
