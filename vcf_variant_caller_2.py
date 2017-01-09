@@ -43,7 +43,7 @@ hqpos = []
 hqref = []
 for line in ff:
     temp1 = line.strip("\n").split("\t")
-    hqpos.append(temp1[0])
+    hqpos.append(int(temp1[0]))
     hqref.append(temp1[1])
 hqposlist.append(hqpos)
 hqposlist.append(hqref)
@@ -106,18 +106,26 @@ def vcf_parser(filename):
 
 variantlist = vcf_parser(vcffile)
 
+# Create list of positions with indels
+
+def indel_pos_list(variantlist):
+    indel_pos_list = []
+    for variant in variantlist:
+        if len(variant.ref) > 1 or len(variant.alt) > 1:
+            if variant.pos not in indel_pos_list:
+                indel_pos_list.append(variant.pos)
+    return indel_pos_list
+
+indel_list = indel_pos_list(variantlist)
 
 # Based on high quality SNP positions, relax criteria for SNPs and identify any other SNPs with lower quality at THOSE positions:
-# def lq_var_dict(dictofvariants, indel_list, hqposlist):
-#     lqvardict = {}
-#
-#     for key, value in dictofvariants.iteritems():
-#         lq_var = []
-#         for variant in value:
-#             if variant.pos in hqposlist[0] and variant.dp >= LQS_DEPTH and variant.quality >= LQS_QUALITY and variant.dp4[2] >= LQS_ALT_THRESHOLD and variant.dp4[3] >= LQS_ALT_THRESHOLD and (variant.dp4[0] + variant.dp4[1]) < LQS_REF_MAX *(variant.dp4[2] + variant.dp4[3]) and variant.pos > LQS_MIN_DIST and variant.pos < (LQS_REF_LENGTH - LQS_MIN_DIST) and float(variant.dp4[2]) / variant.dp4[3] > LQS_MIN_DP_PER and float(variant.dp4[3]) / variant.dp4[2] > LQS_MIN_DP_PER and len(variant.ref) == 1 and len(variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable([range(indel - LQS_MIN_DIST, indel + LQS_MIN_DIST + 1) for indel in indel_list]) and variant.pos not in lq_var:
-#                 lq_var.append(variant)
-#         lqvardict[key] = lq_var
-#     return lqvardict
-#
-#
-# lqvardict = lq_var_dict(dictofvariants, indel_list, hqposlist)
+def lq_var_list(variantlist, indel_list, hqposlist):
+    lqvarlist = []
+    for variant in variantlist:
+        if variant.pos in hqposlist[0] and variant.dp >= LQS_DEPTH and variant.quality >= LQS_QUALITY and variant.dp4[2] >= LQS_ALT_THRESHOLD and variant.dp4[3] >= LQS_ALT_THRESHOLD and (variant.dp4[0] + variant.dp4[1]) < LQS_REF_MAX *(variant.dp4[2] + variant.dp4[3]) and variant.pos > LQS_MIN_DIST and variant.pos < (LQS_REF_LENGTH - LQS_MIN_DIST) and float(variant.dp4[2]) / variant.dp4[3] > LQS_MIN_DP_PER and float(variant.dp4[3]) / variant.dp4[2] > LQS_MIN_DP_PER and len(variant.ref) == 1 and len(variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable([range(indel - LQS_MIN_DIST, indel + LQS_MIN_DIST + 1) for indel in indel_list]):
+            lqvarlist.append(variant)
+
+    return lqvarlist
+
+
+lqvardict = lq_var_dict(variantlist, indel_list, hqposlist)
