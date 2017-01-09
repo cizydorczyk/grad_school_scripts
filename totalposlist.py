@@ -1,6 +1,7 @@
 import itertools
 from sys import argv
 
+# hqposlist must already exist as an empty file in desired output directory.
 script, filename, totalhqposlist = argv
 
 """Set High Quality SNP (HQS) Criteria:"""

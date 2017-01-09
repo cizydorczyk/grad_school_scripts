@@ -128,4 +128,4 @@ def lq_var_list(variantlist, indel_list, hqposlist):
     return lqvarlist
 
 
-lqvardict = lq_var_dict(variantlist, indel_list, hqposlist)
+lqvarlist = lq_var_list(variantlist, indel_list, hqposlist)
