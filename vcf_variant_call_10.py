@@ -102,7 +102,7 @@ class Parser(object):
 
 
 a = Parser(["/Users/conradizydorczyk/Desktop/Python_Learning/sample_vcf",
-            "/Users/conradizydorczyk/Desktop/Python_Learning/sample_vcf7"])
+            "/Users/conradizydorczyk/Desktop/Python_Learning/sample_vcf2"])
 
 # dictofvariants now holds a dictionary with keys equal to filenames, and values equal to lists of VcfVariants instances
 dictofvariants = a.vcf_parser_multiple()
