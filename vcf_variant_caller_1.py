@@ -111,30 +111,12 @@ def byPos_key(variant):
 # Creates list of high quality SNP positions by filtering all SNPs using HQS criteria
 # at top of this file:
 def hq_pos_list(variantlist, indel_list):
-
-    hq_list = []
-    hq_pos = []
-    temp1 = []
-    for variant in variantlist:
-        if variant.dp >= HQS_DEPTH and variant.quality >= HQS_QUALITY and variant.dp4[2] >= HQS_ALT_THRESHOLD and variant.dp4[3] >= HQS_ALT_THRESHOLD and (variant.dp4[0] + variant.dp4[1]) < HQS_REF_MAX*(variant.dp4[2] + variant.dp4[3]) and variant.pos > HQS_MIN_DIST and variant.pos < (HQS_REF_LENGTH - HQS_MIN_DIST) and float(variant.dp4[2])/variant.dp4[3] > HQS_MIN_DP_PER and float(variant.dp4[3])/variant.dp4[2] > HQS_MIN_DP_PER and len(variant.ref) == 1 and len(variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable([range(indel-HQS_MIN_DIST, indel + HQS_MIN_DIST + 1) for indel in indel_list]) and variant.pos not in hq_pos:
-            hq_pos.append(variant.pos)
-            temp1.append(variant)
-    hq_var = sorted(temp1, key=byPos_key)
-    hq_pos.sort()
-    hq_list.append(hq_pos)
-    hq_list.append(hq_var)
-    return hq_list
+    # Need to make this file using bash and touch beforehand in desired directory:
+    with open("/Users/conradizydorczyk/Desktop/hqposlist.txt", 'a') as infile:
+        for variant in variantlist:
+            if variant.dp >= HQS_DEPTH and variant.quality >= HQS_QUALITY and variant.dp4[2] >= HQS_ALT_THRESHOLD and variant.dp4[3] >= HQS_ALT_THRESHOLD and (variant.dp4[0] + variant.dp4[1]) < HQS_REF_MAX*(variant.dp4[2] + variant.dp4[3]) and variant.pos > HQS_MIN_DIST and variant.pos < (HQS_REF_LENGTH - HQS_MIN_DIST) and float(variant.dp4[2])/variant.dp4[3] > HQS_MIN_DP_PER and float(variant.dp4[3])/variant.dp4[2] > HQS_MIN_DP_PER and len(variant.ref) == 1 and len(variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable([range(indel-HQS_MIN_DIST, indel + HQS_MIN_DIST + 1) for indel in indel_list]):
+                infile.write(str(variant.pos)+"\t")
+                infile.write(str(variant.ref)+"\t")
+                infile.write(str(variant.alt)+"\n")
 
 hqposlist = hq_pos_list(variantlist, indel_list)
-
-# Based on high quality SNP positions, relax criteria for SNPs and identify any other SNPs with lower quality at THOSE positions:
-def lq_var_list(variantlist, indel_list, hqposlist):
-    lqvarlist = []
-
-    for variant in variantlist:
-        if variant.pos in hqposlist[0] and variant.dp >= LQS_DEPTH and variant.quality >= LQS_QUALITY and variant.dp4[2] >= LQS_ALT_THRESHOLD and variant.dp4[3] >= LQS_ALT_THRESHOLD and (variant.dp4[0] + variant.dp4[1]) < LQS_REF_MAX *(variant.dp4[2] + variant.dp4[3]) and variant.pos > LQS_MIN_DIST and variant.pos < (LQS_REF_LENGTH - LQS_MIN_DIST) and float(variant.dp4[2]) / variant.dp4[3] > LQS_MIN_DP_PER and float(variant.dp4[3]) / variant.dp4[2] > LQS_MIN_DP_PER and len(variant.ref) == 1 and len(variant.alt) == 1 and variant.pos not in itertools.chain.from_iterable([range(indel - LQS_MIN_DIST, indel + LQS_MIN_DIST + 1) for indel in indel_list]) and variant.pos not in lqvarlist:
-            lqvarlist.append(variant)
-    return lqvarlist
-
-
-lqvarlist = lq_var_list(variantlist, indel_list, hqposlist)
