@@ -111,12 +111,12 @@ def indel_pos_list(dictofvariants):
     for key in dictofvariants:
         for variant in dictofvariants[key]:
             if len(variant.ref) > 1 or len(variant.alt) > 1:
-                #if variant.pos not in indel_pos_list:
-                indel_pos_list.append(variant.pos)
+                if variant.pos not in indel_pos_list:
+                    indel_pos_list.append(variant.pos)
     return indel_pos_list
 
 indel_list = indel_pos_list(dictofvariants)
-
+print indel_list
 # Used to sort high quality SNPs by position in hq_pos_list() function
 def byPos_key(variant):
     return variant.pos
@@ -155,13 +155,13 @@ def lq_var_dict(dictofvariants, indel_list, hqposlist):
 
 lqvardict = lq_var_dict(dictofvariants, indel_list, hqposlist)
 
-#Create dictionary of filename:sequence, where the sequence is either the reference or alternate base at each
-#high quality position
+# Create dictionary of filename:sequence, where the sequence is either the reference or alternate base at each
+# high quality position
 def varseq(lqvardict, hqposlist):
     seqdict = {}
     for key in lqvardict:
         seq = ''
-#Go by positions in hqposlist[0] because these are sorted, whereas lqpvardict keys are not sorted
+# Go by positions in hqposlist[0] because these are sorted, whereas lqpvardict keys are not sorted
         for pos in hqposlist[0]:
             for variant in lqvardict[key]:
                 if variant.pos == pos:
@@ -174,8 +174,8 @@ def varseq(lqvardict, hqposlist):
                     else:
                         seq += variant.ref
                         break
-            #If the for-loop doesn't execute for a particular position, this else statement does, and records the reference base for that position
-            #this can occur if a particular file does not have a variant at a position in hqposlist
+            # If the for-loop doesn't execute for a particular position, this else statement does, and records the reference base for that position
+            # this can occur if a particular file does not have a variant at a position in hqposlist
             else:
                 seq += hqposlist[1][hqposlist[0].index(pos)].ref
         seqdict[key] = seq
@@ -184,6 +184,7 @@ def varseq(lqvardict, hqposlist):
 seqdict1 = varseq(lqvardict, hqposlist)
 
 print seqdict1
+
 
 
 ff = open("/Users/conradizydorczyk/Desktop/fasta_file_1", 'w')
