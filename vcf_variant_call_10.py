@@ -71,7 +71,6 @@ class Parser(object):
                     temp_list1.append(temp_list2[4])
                     temp_list1.append(float(temp_list2[5]))
                     temp_list3 = temp_list2[7].split(";")
-                    # print temp_list3
                     for item in temp_list3:
                         if item.startswith("DP="):
                             if len(item) == 5:
@@ -87,9 +86,8 @@ class Parser(object):
                                 temp_list5.append(int(items))
                             temp_list1.append(temp_list5)
                     temp_list1.append(i)
-                    #print temp_list1
                     var_list1.append(temp_list1)
-#Call VcfVariant class on each parsed line (item in temp_list1)
+            # Call VcfVariant class on each parsed line (item in temp_list1)
             for j in var_list1:
                 temp1 = VcfVariants(j[0], j[1], j[2], j[3], j[4], j[5], j[6], j[7], j[8])
                 variant_list.append(temp1)
@@ -104,25 +102,26 @@ class Parser(object):
 a = Parser(["/Users/conradizydorczyk/Desktop/Python_Learning/sample_vcf",
             "/Users/conradizydorczyk/Desktop/Python_Learning/sample_vcf7"])
 
-#dictofvariants now holds a dictionary with keys equal to filenames, and values equal to lists of VcfVariants instances
+# dictofvariants now holds a dictionary with keys equal to filenames, and values equal to lists of VcfVariants instances
 dictofvariants = a.vcf_parser_multiple()
 
-#Create list of positions with indels
+# Create list of positions with indels
 def indel_pos_list(dictofvariants):
     indel_pos_list = []
     for key in dictofvariants:
         for variant in dictofvariants[key]:
             if len(variant.ref) > 1 or len(variant.alt) > 1:
+                #if variant.pos not in indel_pos_list:
                 indel_pos_list.append(variant.pos)
     return indel_pos_list
 
 indel_list = indel_pos_list(dictofvariants)
 
-#Used to sort high quality SNPs by position in hq_pos_list() function
+# Used to sort high quality SNPs by position in hq_pos_list() function
 def byPos_key(variant):
     return variant.pos
 
-#Creates list of high quality SNP positions by filtering all SNPs using criteria at top of this file
+# Creates list of high quality SNP positions by filtering all SNPs using criteria at top of this file
 def hq_pos_list(dictofvariants, indel_list):
 
     hq_list = []
@@ -141,8 +140,7 @@ def hq_pos_list(dictofvariants, indel_list):
 
 hqposlist = hq_pos_list(dictofvariants, indel_list)
 
-
-#Based on high quality SNP positions, relax criteria for SNPs and identify any other SNPs with lower quality at THOSE postions
+# Based on high quality SNP positions, relax criteria for SNPs and identify any other SNPs with lower quality at THOSE positions:
 def lq_var_dict(dictofvariants, indel_list, hqposlist):
     lqvardict = {}
 
