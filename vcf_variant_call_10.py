@@ -78,6 +78,8 @@ class Parser(object):
                                     temp_list3[temp_list3.index(item)][-2] + temp_list3[temp_list3.index(item)][-1]))
                             elif len(item) == 4:
                                 temp_list1.append(int(temp_list3[temp_list3.index(item)][-1]))
+                            elif len(item) == 6:
+                                temp_list1.append(int(temp_list3[temp_list3.index(item)][-3] + temp_list3[temp_list3.index(item)][-2] + temp_list3[temp_list3.index(item)][-1]))
                     for item in temp_list3:
                         if item.startswith("DP4"):
                             temp_list4 = item[4:].split(",")
