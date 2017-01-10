@@ -129,3 +129,32 @@ def lq_var_list(variantlist, indel_list, hqposlist):
 
 
 lqvarlist = lq_var_list(variantlist, indel_list, hqposlist)
+
+# Create dictionary of filename:sequence, where the sequence is either the reference or alternate base at each
+# high quality position
+def varseq(lqvarlist, hqposlist):
+    seq = ''
+# Go by positions in hqposlist[0] because these are sorted, whereas lqpvardict keys are not sorted
+    for pos in hqposlist[0]:
+        for variant in lqvarlist:
+            if variant.pos == pos:
+                if (variant.dp4[0] + variant.dp4[1])/(variant.dp4[0] + variant.dp4[1] + variant.dp4[2] + variant.dp4[3]) <= LQS_SNP_CUTOFF:
+                    seq += variant.alt
+                    break
+                elif LQS_SNP_CUTOFF < (variant.dp4[0] + variant.dp4[1])/(variant.dp4[0] + variant.dp4[1] + variant.dp4[2] + variant.dp4[3]) < LQS_REF_CUTOFF:
+                    seq += "N"
+                    break
+                else:
+                    seq += variant.ref
+                    break
+        # If the for-loop doesn't execute for a particular position, this else statement does, and records the reference base for that position
+        # this can occur if a particular file does not have a variant at a position in hqposlist
+        else:
+            seq += hqposlist[1][hqposlist[0].index(pos)]
+    return seq
+
+seq = varseq(lqvarlist, hqposlist)
+
+ff = open(outputfasta, 'a')
+ff.write(">"+vcffile+"\n"+seq+"\n")
+ff.close()
