@@ -36,6 +36,8 @@ LQS_SNP_CUTOFF = 0.20
 # Must create outputfasta in desired output directory prior to running script.
 script, vcffile, hqsortedposlist, outputfasta = argv
 
+print "Now processing "+vcffile
+
 ff = open(hqsortedposlist, 'r')
 
 hqposlist = []
