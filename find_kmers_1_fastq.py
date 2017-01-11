@@ -1,7 +1,7 @@
 from sys import argv
 # Specify input fastqc data file, fastq file with reads, and output file
 # in the command line
-script, fastqcdatafile, fastqfile, outputfastafile = argv
+script, fastqcdatafile, fastqfile, outputfastqfile = argv
 
 # function to get list of kmers from fastqc_data.txt file:
 def get_kmers(fastqcdatafile):
@@ -26,12 +26,12 @@ kmers = get_kmers(fastqcdatafile)
 print kmers
 
 # Create output file
-outfile = open(outputfastafile, 'w')
+outfile = open(outputfastqfile, 'w')
 outfile.close()
 
 
 # Open output file for appending
-outfile = open(outputfastafile, 'a')
+outfile = open(outputfastqfile, 'a')
 
 # Open fastq file, read line by line, if kmer is in line, write line to
 # output file, along with the header for that read, in fasta format

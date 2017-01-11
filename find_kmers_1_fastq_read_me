@@ -1,0 +1,17 @@
+This script takes a fastqc_data.txt file, parses it to obtain a list of the
+identified kmers, and then iterates through the corresponding fastq file, writing
+reads that contain a kmer to a new file.
+
+The script takes three argumnets:
+
+  fastqcdatafile: this is the fastqc_data.txt file for a given isolate
+
+  fastqfile: this is the fastq file that corresponds to the fastqc_data.txt file
+      given as the previous argument (same isolate)
+
+  outputfastqfile: this is the output file, which will contain all reads that had
+      at least one kmer in them; if a read contains multiple kmers, it is
+      included only once; the output is in fastq format
+
+If a file contains no kmers, then this will simply output a blank file (with 
+    .fastq extension).

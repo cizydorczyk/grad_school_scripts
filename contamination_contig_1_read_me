@@ -1,0 +1,3 @@
+The script takes four command line arguments: the first is the blast output (format 7; see A18), input fasta file with ALL assembled contigs, an output fasta file which will contain the fasta sequences of those contigs that did not BLAST to P. aeruginosa, and an output file which will contain a list of contaminating sequence contig IDs and the contaminant (mostly for information at this point).
+
+The script parses the BLAST output file and creates a list of contigs that did not BLAST to P. aeruginosa. The fasta file containing all assembled contigs (from CLC) is then parsed and contigs that are in the list generated from parsing the BLAST file are written to a new fasta file.
