@@ -11,6 +11,8 @@ script, inputblastfile, inputcontigfasta, outputfafile, outputcontfile = argv
 #print inputblastfile
 #print inputcontigfasta
 
+print "Now processing "+inputblastfile
+
 inputblast = open(inputblastfile, 'r')
 
 contfile = open(outputcontfile, 'w')
