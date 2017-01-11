@@ -1,4 +1,5 @@
 from sys import argv
+from Bio import SeqIO
 
 # inputblasefile is the input blast output file (tsv)
 # inputcontigfasta is the fasta file containing all contigs for an isolate
@@ -11,22 +12,37 @@ script, inputblastfile, inputcontigfasta, outputfafile, outputcontfile = argv
 #print inputblastfile
 #print inputcontigfasta
 
-print "Now processing "+inputblastfile
 
-inputblast = open(inputblastfile, 'r')
+def blast_parse(inputblastfile):
 
-contfile = open(outputcontfile, 'w')
+    print "Now processing "+inputblastfile
+    inputblast = open(inputblastfile, 'r')
+    contfile = open(outputcontfile, 'w')
+    contigs_to_remove = []
+    for line in inputblast:
+        if not line.startswith("#"):
+            temp1 = line.strip("\n").split("\t")
+            if not temp1[-1].startswith("Pseudomonas aeruginosa"):
+                contigs_to_remove.append(temp1[0])
+                contfile.write(temp1[0]+"\t")
+                contfile.write(temp1[-1]+"\n")
+    inputblast.close()
+    contfile.close()
+    return contigs_to_remove
 
-contigs_to_remove = []
-for line in inputblast:
-    if not line.startswith("#"):
-        temp1 = line.strip("\n").split("\t")
-        if not temp1[-1].startswith("Pseudomonas aeruginosa"):
-            contigs_to_remove.append(">"+temp1[0])
-            contfile.write(temp1[0]+"\t")
-            contfile.write(temp1[-1]+"\n")
-inputblast.close()
-contfile.close()
+contigs_to_remove = blast_parse(inputblastfile)
+
+def cont_contig(inputcontigfasta, contigstoremove):
+    outfile = open(outputfafile, 'w')
+    for record in SeqIO.parse(inputcontigfasta, "fasta"):
+        if record.id in contigstoremove:
+            header = ">"+record.id
+            seq = str(record.seq)
+            outfile.write(header+"\n")
+            outfile.write(seq+"\n")
+    outfile.close()
+
+cont_contig(inputcontigfasta, contigs_to_remove)
 
 
 
