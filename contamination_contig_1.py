@@ -28,7 +28,7 @@ for line in inputblast:
 inputblast.close()
 contfile.close()
 
-#outfasta = open(outputfafile, 'w')
+outfasta = open(outputfafile, 'w')
 
 contigs = [line.strip("\n") for line in open(inputcontigfasta, 'r')]
 
@@ -36,10 +36,10 @@ infile = open(inputcontigfasta, 'r')
 
 for line in infile:
     if line.strip("\n") in contigs_to_remove:
-        print line,
+        outfasta.write(line)
         line = next(infile)
         while not line.startswith(">") and line != '':
-            print line,
+            outfasta.write(line)
             line = next(infile)
 
 infile.close()
