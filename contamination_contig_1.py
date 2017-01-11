@@ -34,15 +34,15 @@ contigs = [line.strip("\n") for line in open(inputcontigfasta, 'r')]
 
 infile = open(inputcontigfasta, 'r')
 
-for line in infile:
-    if line.strip("\n") in contigs_to_remove:
-        outfasta.write(line)
-        line = next(infile)
-        while not line.startswith(">") and line != '':
-            outfasta.write(line)
-            line = next(infile)
+#for line in infile:
+#    if line.strip("\n") in contigs_to_remove:
+#        outfasta.write(line)
+#        line = next(infile)
+#        while not line.startswith(">") and line != '':
+#            outfasta.write(line)
+#            line = next(infile)
 
-infile.close()
+#infile.close()
 
 
 #outfasta.close()
@@ -56,12 +56,12 @@ infile.close()
 #    contigs.append(temp2)
 #contigfile.close()
 
-#for inum, i in enumerate(contigs):
-#    if i in contigs_to_remove:
-#        count = 1
-#        outfile.write(i+"\n")
-#        while not contigs[inum+count].startswith(">"):
-#            outfile.write(contigs[inum+count]+"\n")
-#            count += 1
+for inum, i in enumerate(contigs):
+    if i in contigs_to_remove:
+        count = 1
+        outfasta.write(i+"\n")
+        while not contigs[inum+count].startswith(">"):
+	    outfasta.write(contigs[inum+count]+"\n")
+	    count += 1
 
-#outfile.close()
+outfasta.close()
