@@ -26,21 +26,40 @@ for line in inputblast:
 inputblast.close()
 contfile.close()
 
-outfile = open(outputfafile, 'w')
+#outfasta = open(outputfafile, 'w')
 
-contigfile = open(inputcontigfasta, 'r')
-contigs = []
-for line in contigfile:
-    temp2 = line.strip("\n")
-    contigs.append(temp2)
-contigfile.close()
+contigs = [line.strip("\n") for line in open(inputcontigfasta, 'r')]
 
-for inum, i in enumerate(contigs):
-    if i in contigs_to_remove:
-        count = 1
-        outfile.write(i+"\n")
-        while not contigs[inum+count].startswith(">"):
-            outfile.write(contigs[inum+count]+"\n")
-            count += 1
+infile = open(inputcontigfasta, 'r')
 
-outfile.close()
+for line in infile:
+    if line.strip("\n") in contigs_to_remove:
+        print line,
+        line = next(infile)
+        while not line.startswith(">") and line != '':
+            print line,
+            line = next(infile)
+
+infile.close()
+
+
+#outfasta.close()
+
+
+
+#contigfile = open(inputcontigfasta, 'r')
+#contigs = []
+#for line in contigfile:
+#    temp2 = line.strip("\n")
+#    contigs.append(temp2)
+#contigfile.close()
+
+#for inum, i in enumerate(contigs):
+#    if i in contigs_to_remove:
+#        count = 1
+#        outfile.write(i+"\n")
+#        while not contigs[inum+count].startswith(">"):
+#            outfile.write(contigs[inum+count]+"\n")
+#            count += 1
+
+#outfile.close()
