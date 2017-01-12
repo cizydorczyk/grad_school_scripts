@@ -1,0 +1,13 @@
+This script parses two fastq files and outputs the number of reads in each
+in a tsv file.
+
+Written originally to produce a tsv file with number of total reads and
+number of reads with kmers in them (used after reads with kmers were identified).
+
+It takes three arguments:
+
+    first fastq file
+
+    second fastq file
+
+    output .tsv file

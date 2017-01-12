@@ -44,3 +44,7 @@ the alternate or reference base calls at that position.
   (from output file of deduplicatedposlist.py). If a particular vcf file does
   not have a variant at a position in the list of high quality SNPs, the
   reference base for that position is recorded in the sequence.
+
+NOTE: vcf_variant_call_10.py is a single script that performs all of these
+functions. It gives no progress reports, however, and so it may be a better
+idea to use the three individual scripts listed here.
