@@ -4,6 +4,7 @@ import os.path
 script, fastqc_data_file, outputtsv = argv
 
 def get_reads(fastqcdatafile):
+    print "Parsing "+fastqc_data_file
     with open(fastqc_data_file, 'r') as infile:
         for line in infile:
             if line.startswith("Filename"):
