@@ -54,3 +54,14 @@ def remove_reads(fastq_reads_objects_list, list_of_reads_to_remove):
 
 temp1 = remove_reads(fastq_file_reads, readstoremove)
 print temp1
+
+
+
+
+"""conrad@Conrad-PC:~/grad_school_scripts$ python filter_reads_from_fastq.py ~/Data/160902_NextSeq/primary_project/kmers/trimmomatic_v3_kmers/6_R1_kmers.fastq ~/Data/160902_NextSeq/primary_project/Fastq_files/trimmomatic_v3/paired/6_R1_trimmed.fastq
+Now parsing: /home/conrad/Data/160902_NextSeq/primary_project/Fastq_files/trimmomatic_v3/paired/6_R1_trimmed.fastq
+	Number of sequences in fastq file: 572088
+	Number of objects in fastq file: 572088
+	Identifying reads to remove in: /home/conrad/Data/160902_NextSeq/primary_project/kmers/trimmomatic_v3_kmers/6_R1_kmers.fastq
+	Number of reads to remove identified: 32240
+18962"""
