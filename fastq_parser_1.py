@@ -29,4 +29,4 @@ def Fastq_Parser(fastqfile):
     return fastqobjects
 list_of_fastq_objects = Fastq_Parser(fastqfile)
 
-"""Returns half the no. of lines starting with @ compared to fastq_parser_2.py"""
+"""Returns same # of lines as grep version 2 of this script that start with @ when I comment out the above sections..."""
