@@ -1,9 +1,0 @@
-#!/bin/bash
-
-for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
-
-do
-
-  /home/conrad/Software/bwa-0.7.15/bwa mem /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/PAO1_genome/PAO1genome.fasta /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R1_trimmed.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R2_trimmed.fastq" > /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/Alignments/$i"_PAO1_aln.sam"
-
-done

@@ -1,8 +1,0 @@
-#!/bin/bash
-for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
-
-do
-
-  /home/conrad/Software/samtools-1.3.1/samtools view -b -S -o /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/Alignments/samtools_bam_files/$i"_PAO1_aln.bam" /home/conrad/Data/160902_NextSeq/Trevors_strains/wspF_cdrA_ref_alignment/Alignments/bwa_sam_files/$i"_PAO1_aln.sam"
-
-done

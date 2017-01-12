@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for i in $(cat /home/conrad/Data/160902_NextSeq/file_index)
-do
-  java -jar /home/conrad/Software/Trimmomatic-0.36/trimmomatic-0.36.jar PE -trimlog /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/log_1 /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v1/$i"_R1_trimmed.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v1/$i"_R2_trimmed.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R1_trimmed.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R1_trimmed_unpaired.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R2_trimmed.fastq" /home/conrad/Data/160902_NextSeq/Trevors_strains/Fastq_Files/trimmomatic_fastq_files_v2/$i"_R2_trimmed_unpaired.fastq" HEADCROP:9
-
-done
