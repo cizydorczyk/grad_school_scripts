@@ -1,0 +1,13 @@
+This script takes an input fastqc data file (fastqc_data.txt file), parses it,
+and outputs a tsv file with filename in one column, and the total number of reads
+in that file in the second.
+
+The output file does not have to exist when first running this script. That said,
+if the output file already does exist, the script will simply append to it if the
+same output file is used for several isolates.
+
+The script takes two arguments:
+
+  fastqc_data_file: this is the fastqc_data.txt file
+
+  outputtsv: this is the output .tsv file
