@@ -11,14 +11,23 @@ class FastqObject(object):
 
 def Fastq_Parser(fastqfile):
     fastqobjects = []
-    print "Now parsing: " + str(fastqfile)
+    print "\tNow parsing: " + str(fastqfile)
     with open(fastqfile, 'r') as infile:
-        numline = 0
-        for line in infile:
-            if line.startswith("@"):
-                numline += 1
-    return numline
+        reads = [line.strip("\n") for line in infile]
+    count = 0
+    for lnum, line in enumerate(reads):
+        temp1 = []
+        if line.startswith("@"):
+            count += 1
+            temp1.append(line.strip("\n"))
+            temp1.append(reads[lnum+1])
+            temp1.append(reads[lnum+2])
+            temp1.append(reads[lnum+3])
+            fastqobjects.append(FastqObject(temp1[0], temp1[1], temp1[2], temp1[3]))
+    print "\tNumber of reads in file: " + str(count)
+    print "\tNumber of fastq objects created: " + str(len(fastqobjects))
+    return fastqobjects
 
-print Fastq_Parser(fastqfile)
+a = Fastq_Parser(fastqfile)
 
 """Returns the proper number of lines (same as grep) that start with @ in the fastq file"""
