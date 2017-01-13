@@ -11,22 +11,21 @@ class FastqObject(object):
 
 def Fastq_Parser(fastqfile):
     fastqobjects = []
-    print "Now parsing: " + str(fastqfile)
+    print "\tNow parsing: " + str(fastqfile)
     with open(fastqfile, 'r') as infile:
-        numline = 0
-        for line in infile:
-
-            if line.startswith("@"):
-                numline += 1
-                features = []
-                features.append(line.strip("\n"))
-                line = next(infile)
-                while not line.startswith("@"):
-                    features.append(line.strip("\n"))
-                    line = next(infile)
-                fastqobjects.append(FastqObject(features[0], features[1], features[2], features[3]))
-    print "\tNumber of sequences in fastq file: " + str(numline)
-    print "\tNumber of objects in fastq file: " + str(len(fastqobjects))
+        reads = [line.strip("\n") for line in infile]
+    count = 0
+    for lnum, line in enumerate(reads):
+        temp1 = []
+        if line.startswith("@"):
+            count += 1
+            temp1.append(line.strip("\n"))
+            temp1.append(reads[lnum+1])
+            temp1.append(reads[lnum+2])
+            temp1.append(reads[lnum+3])
+            fastqobjects.append(FastqObject(temp1[0], temp1[1], temp1[2], temp1[3]))
+    print "\tNumber of reads in file: " + str(count)
+    print "\tNumber of fastq objects created: " + str(len(fastqobjects))
     return fastqobjects
 
 fastq_file_reads = Fastq_Parser(fastq_file_to_filter)
@@ -46,6 +45,7 @@ readstoremove = reads_to_remove(toremovefastq)
 
 
 def remove_reads(fastq_reads_objects_list, list_of_reads_to_remove):
+    print "Removing reads from: " + fastq_file_to_filter
     count = 0
     for i in fastq_reads_objects_list:
         if i.sequence in list_of_reads_to_remove:
@@ -54,14 +54,3 @@ def remove_reads(fastq_reads_objects_list, list_of_reads_to_remove):
 
 temp1 = remove_reads(fastq_file_reads, readstoremove)
 print temp1
-
-
-
-
-"""conrad@Conrad-PC:~/grad_school_scripts$ python filter_reads_from_fastq.py ~/Data/160902_NextSeq/primary_project/kmers/trimmomatic_v3_kmers/6_R1_kmers.fastq ~/Data/160902_NextSeq/primary_project/Fastq_files/trimmomatic_v3/paired/6_R1_trimmed.fastq
-Now parsing: /home/conrad/Data/160902_NextSeq/primary_project/Fastq_files/trimmomatic_v3/paired/6_R1_trimmed.fastq
-	Number of sequences in fastq file: 572088
-	Number of objects in fastq file: 572088
-	Identifying reads to remove in: /home/conrad/Data/160902_NextSeq/primary_project/kmers/trimmomatic_v3_kmers/6_R1_kmers.fastq
-	Number of reads to remove identified: 32240
-18962"""
