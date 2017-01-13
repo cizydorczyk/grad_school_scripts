@@ -57,5 +57,3 @@ for lnum, line in enumerate(list2):
 outfile.close()
 print "Total reads with kmers: " + str(totalcount)
 print "Unique reads with kmers: " + str(uniqcount)
-
-print list3
