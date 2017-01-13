@@ -38,7 +38,7 @@ def reads_to_remove(toremove_fastq):
             if line.startswith("@"):
                 line = next(infile)
                 readstoremove.append(line.strip("\n"))
-    print "\tNumber of reads to remove identified: " + str(len(readstoremove))
+    print "\tNumber of reads in kmer file: " + str(len(readstoremove))
     return readstoremove
 
 readstoremove = reads_to_remove(toremovefastq)
