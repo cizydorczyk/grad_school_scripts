@@ -50,29 +50,3 @@ def filter1(fastqfilereadsobjectslist, readstoremoveobjectslist):
     print "# Reads removed: " + str(count)
 
 filter1(fastq_file_reads, reads_to_remove)
-
-
-#def reads_to_remove(toremove_fastq):
-#    print "\tIdentifying reads to remove in: " + str(toremovefastq)
-#    readstoremove = []
-#    with open(toremove_fastq, 'r') as infile:
-#        for line in infile:
-#            if line.startswith("@"):
-#                line = next(infile)
-#                readstoremove.append(line.strip("\n"))
-#    print "\tNumber of reads in kmer file: " + str(len(readstoremove))
-#    return readstoremove
-
-#readstoremove = reads_to_remove(toremovefastq)
-
-
-#def remove_reads(fastq_reads_objects_list, list_of_reads_to_remove):
-#    print "Removing reads from: " + fastq_file_to_filter
-#    count = 0
-#    for i in fastq_reads_objects_list:
-#        if i.sequence in list_of_reads_to_remove:
-#            count += 1
-#    return count
-
-#temp1 = remove_reads(fastq_file_reads, readstoremove)
-#print temp1

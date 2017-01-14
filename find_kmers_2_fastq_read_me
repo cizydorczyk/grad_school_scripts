@@ -13,5 +13,5 @@ The script takes three argumnets:
       at least one kmer in them; if a read contains multiple kmers, it is
       included only once; the output is in fastq format
 
-If a file contains no kmers, then this will simply output a blank file (with 
+If a file contains no kmers, then this will simply output a blank file (with
     .fastq extension).
