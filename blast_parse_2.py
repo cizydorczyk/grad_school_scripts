@@ -21,7 +21,7 @@ def blast_parse(inputblastfile):
             if (lnum+4) < len(lines):
                 temp1 = i.split(' ')
                 query_list.append(temp1[-1].strip("\n"))
-                print "Query at index: " + str(lnum)
+                print "\tQuery at index: " + str(lnum)
                 temp2 = lines[lnum+4]
                 temp3 = temp2.split("\t")
                 top_hit_list.append(temp3[-1].strip("\n"))
@@ -32,7 +32,7 @@ def blast_parse(inputblastfile):
                     fill_color.append("yellow")
                     out_color.append("orange")
             elif (lnum+4) >= len(lines):
-                print "Query at final index: " + str(lnum)
+                print "\tQuery at final index: " + str(lnum)
                 temp1 = i.split(' ')
                 query_list.append(temp1[-1].strip("\n"))
                 fill_color.append("yellow")
