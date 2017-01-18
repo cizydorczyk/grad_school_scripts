@@ -1,13 +1,15 @@
 from sys import argv
 import itertools
+import pandas
 
-script, inputblastfile, output_tsv = argv
-
-#print inputblastfile
-#print inputcontigfasta
+script, inputblastfile, inputcontigstats, output_tsv = argv
 
 
 def blast_parse(inputblastfile):
+    print "Working on file: " + str(inputblastfile)
+    data = pandas.read_table(inputcontigstats, sep="\t")
+    length_list = list(data["Consensus length"])
+    coverage_list = list(data["Average coverage"])
     with open(inputblastfile, 'r') as infile:
         lines = list(infile)
     query_list = []
@@ -18,6 +20,9 @@ def blast_parse(inputblastfile):
         if "# Query: " in i:
             temp1 = i.split(' ')
             query_list.append(temp1[-1].strip("\n"))
+
+
+
             temp2 = lines[lnum+4]
             temp3 = temp2.split("\t")
             top_hit_list.append(temp3[-1].strip("\n"))
@@ -28,7 +33,10 @@ def blast_parse(inputblastfile):
                 fill_color.append("yellow")
                 out_color.append("orange")
     with open(output_tsv, 'w') as outfile:
-        for i, j, k, l in itertools.izip(query_list, top_hit_list, fill_color, out_color):
-            outfile.write(str(i + "\t" + j + "\t" + k + "\t" + l + "\n"))
+        for query, length, coverage, fill, out, hit in itertools.izip(query_list, length_list, coverage_list, fill_color, out_color, top_hit_list):
+            outfile.write(str(query) + "\t" + str(length) + "\t" + str(coverage) + "\t" + str(fill) + "\t" + str(out) + "\t" + str(hit) + "\n")
+
+
+
 
 contigs_to_remove = blast_parse(inputblastfile)
