@@ -18,10 +18,11 @@ def blast_parse(inputblastfile):
     out_color = []
     for lnum, i in enumerate(lines):
         if "# Query: " in i:
+            # Makes it so that if the final query doesn't have a hit, it will record N/A (see elif statement below)
             if (lnum+4) < len(lines):
                 temp1 = i.split(' ')
                 query_list.append(temp1[-1].strip("\n"))
-                print "\tQuery at index: " + str(lnum)
+                #print "\tQuery at index: " + str(lnum)
                 temp2 = lines[lnum+4]
                 temp3 = temp2.split("\t")
                 top_hit_list.append(temp3[-1].strip("\n"))
