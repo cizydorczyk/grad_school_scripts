@@ -40,6 +40,7 @@ def blast_parse(inputblastfile):
                 out_color.append("orange")
                 top_hit_list.append("N/A")
     with open(output_tsv, 'w') as outfile:
+        outfile.write("Filename" + "\t" + "Length" + "\t" + "Coverage" + "\t" + "Color" + "\t" + "Outline" + "\t" + "Hit" + "\n")
         for query, length, coverage, fill, out, hit in itertools.izip(query_list, length_list, coverage_list, fill_color, out_color, top_hit_list):
             outfile.write(str(query) + "\t" + str(length) + "\t" + str(coverage) + "\t" + str(fill) + "\t" + str(out) + "\t" + str(hit) + "\n")
 
