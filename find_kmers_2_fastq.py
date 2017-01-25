@@ -7,7 +7,7 @@ script, fastqcdatafile, fastqfile, outputfastqfile = argv
 def get_kmers(fastqcdatafile):
     ff = open(fastqcdatafile, "r")
     list1 = list(ff)
-    # for each indexed line in the file, if the line starts with "#Sequence", change the value of list1 to contain all
+    # for each indexed line in the file, if the line starts with "#Sequence", set the value of list3 to contain all
     # lines from that line's index+1 until the end of the file, minus the very last line
     kmer_list = []
     for lnum, line in enumerate(list1):

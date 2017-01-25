@@ -14,3 +14,5 @@ The script takes two arguments:
   The output file does not have to exist when first running this script. That said,
   if the output file already does exist, the script will simply append to it if the
   same output file is used for several isolates.
+
+**********Doesn't work if lengths are binned****************
