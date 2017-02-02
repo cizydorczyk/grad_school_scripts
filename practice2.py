@@ -1,36 +1,50 @@
 from sys import argv
-script, fastqcfile, fastqfile, outputfastafile = argv
+import re
 
-# function to get list of kmers from fastqc_data.txt file:
-def get_kmers(fastqcdatafile):
-    ff = open(fastqcdatafile, "r")
-    list1 = list(ff)
-    # for each indexed line in the file, if the line starts with "#Sequence", change the value of list1 to contain all
-    # lines from that line's index+1 until the end of the file, minus the very last line
-    for lnum, line in enumerate(list1):
-        if line.startswith("#Sequence"):
-            list1 = list1[lnum+1:-1]
-    ff.close()
+script, inputfile = argv
 
-    kmer_list = []
-    for item in list1:
-        list2 = item.split("\t")
-        kmer_list.append(list2[0])
-    return kmer_list
+dict1 = {}
+#should_print = False
+with open(inputfile, 'r') as infile:
+    file_list = list(infile)
+for lnum, line in enumerate(file_list):
+    if line.startswith(">"):
+        print line
+        i = 1
+        while ">" not in line:
+            for lnum, line in enumerate(file_list):
+                print file_list[lnum+i]
+                i += 1
+                line = file_list[lnum+i]
 
-kmers = get_kmers(fastqcfile)
-print kmers
 
-outfile = open(outputfastafile, 'w')
-outfile.close()
 
-outfile = open(outputfastafile, 'a')
-prevline = ""
 
-with open(fastqfile, 'r') as infile:
-    for line in infile:
-        for i in kmers:
-            if i in line:
-                outfile.write(">"+prevline)
-                outfile.write(line)
-outfile.close()
+            # should_print becomes True if was False and becomes False if was True
+        #    should_print = not should_print
+        #if should_print:
+        #    print(line)
+            # keep printing until next ">" encountered; stop at that point
+            # and move on to next line that starts with ">"...
+
+
+
+#        if line.startswith(">"):
+#            header = line
+#            print header
+#print dict1
+
+            #dict1[line.strip("\n")] = next(infile).strip("\n")
+
+#def GC(DNA):
+#    count = 0
+#    for i in DNA:
+#    print count
+#    print len(DNA)
+#    count = float(count)/float(len(DNA)) * 100.00
+#    return count
+#for key, value in dict1.iteritems():
+#    print key
+#    print GC(value)
+
+#print len("CCACCCTCGTGGTATGGCTAGGCATTCAGGAACCGGAGAACGCTTCAGACCAGCCCGGACTGGGAACCTGCGGGCAGTAGGTGGAAT")
