@@ -1,35 +1,14 @@
-from sys import argv
+k = 15.0
+m = 24.0
+n = 30.0
+N = k+m+n
 
-script, inputfile = argv
+P1 = ((k/N * (k-1)/(N-1)) + (k/N * m/(N-1)) + (k/N * n/(N-1)))
+print P1
+P2 = ((m/N * k/(N-1)) + (m/N * (m-1)/(N-1) * (3.0/4.0)) + m/N * n/(N-1) * (2.0/4.0))
+print P2
+P3 = ((n/N * k/(N-1)) + (n/N * m/(N-1) * (2.0/4.0)))
+print P3
 
-with open(inputfile, 'r') as infile:
-    list1 = list(infile)
-
-dict1 = {}
-
-for num, i in enumerate(list1):
-    if i.startswith(">"):
-        #print i,
-        tick = 1
-        sequence = ''
-        j = list1[num+tick]
-        while not j.startswith(">"):
-            sequence += j.strip()
-            tick += 1
-            try:
-                j = list1[num+tick]
-            except IndexError:
-                break
-        dict1[i] = sequence
-
-
-def GC_Content(sequence):
-    count = 0.0
-    for i in sequence:
-        if i in "GCgc":
-            count += 1.0
-    return count/float(len(sequence))*100.00
-
-for key, sequence in dict1.iteritems():
-    print key,
-    print GC_Content(sequence)
+P = P1 + P2 + P3
+print P
