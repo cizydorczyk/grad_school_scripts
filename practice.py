@@ -13,7 +13,7 @@ list2 = []
 for line in list1:
     line2 = line.split("_")
     list2.append(int(line2[-1]))
-list3 = range(1,900)
+list3 = range(1,591)
 print len(list3)
 print len(list2)
 set2 = oset(list2)
