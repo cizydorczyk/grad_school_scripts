@@ -1,73 +1,58 @@
 from sys import argv
-from oset import oset
-script, fastq1, contaminants = argv
 
-class FastqObject(object):
-    def __init__(self, shortheader, header, sequence, spacer, quality, fullread):
-        self.shortheader = shortheader
-        self.header = header
-        self.sequence = sequence
-        self.spacer = spacer
-        self.quality = quality
-        self.fullread = fullread
+# Define command line arguments (input files):
+script, snp_file, annotation_file = argv
 
-# Fastq_Parser parses a fastq file and calls the FastqObject class on each read,
-# creating a unique read object for each read in the file
-def Fastq_Parser(fastqfile):
-    fastqobjects = []
-    print "\tNow parsing: " + str(fastqfile)
-    with open(fastqfile, 'r') as infile:
-        reads = [line.strip("\n") for line in infile]
-    count = 0
-    for lnum, line in enumerate(reads):
-        temp1 = []
-        if line.startswith("@"):
-            count += 1
-            temp19 = line.split(' ')
-            temp1.append(temp19[0])
-            temp1.append(line)
-            temp1.append(reads[lnum+1])
-            temp1.append(reads[lnum+2])
-            temp1.append(reads[lnum+3])
-            temp1.append('\n'.join(temp1[1:]))
-            fastqobjects.append(FastqObject(temp1[0], temp1[1], temp1[2], temp1[3], temp1[4], temp1[5]))
-    print "\tNumber of reads in file: " + str(count)
-    print "\tNumber of fastq objects created: " + str(len(fastqobjects))
-    return fastqobjects
-
-a = Fastq_Parser(fastq1)
-#b = Fastq_Parser(fastq2)
-print "R1 reads total: " + str(len(a))
-#print "R2 reads total: " + str(len(b))
-# Convert list outputs from Fastq_Parser for each of the two input fastq files
-# into ordered sets, which are much faster to test for membership in than lists (used
-# later)
-c = oset(a)
-#d = oset(b)
-print "Length set a :" + str(len(c))
-#print "Length set b :" + str(len(d))
-
-# Creates a list of all kmer headers (minus the #:#:#:# bit at the end of each header)
-# from both input kmer files for both input (R1 and R2) fastq files. This list
-# may contain duplicates at this point, but they are removed when the output
-# list is converted into a set (see below)
-def reads_to_remove(kmerfile1):
-    with open(contaminants, 'r') as infile:
-        headers1 = []
+# Define function to obtain SNP positions from file with SNPs :
+def identify_snp_positions(file_with_snps):
+#   Create empty list for SNP positions:
+    snp_positions_list = []
+#   Open file with SNPs:
+    with open(file_with_snps, 'r') as infile:
+#       For every SNP in the SNP file, if it is not a duplicate, append its position to the empty list:
         for line in infile:
-            if line.startswith("@"):
-                temp1 = line.split(' ')
-                headers1.append(temp1[0])
-        #headers1 = [line.strip("\n") for line in infile if line.startswith("@")]
-    headers = headers1
-    print "Number of kmers in file1: " + str(len(headers1))
-    #print "Number of kmers in file2: " + str(len(headers2))
-    return headers
-f = reads_to_remove(contaminants)
+            if not line.startswith('Position') and line.split('\t')[0] not in snp_positions_list:
+                snp_positions_list.append(int(line.split('\t')[0]))
+#   Return list of SNP positions
+    return snp_positions_list
 
-# Convert output from reads_to_remove into an ordered set.
-# Sets only contain UNIQUE entries; so if two short headers are identical, they
-# will only appear once in the set (hence the length of set g may be lower
-# than the sum of the length of the headers list)
-g = oset(f)
-print "Number of unique kmer headers: " + str(len(g))
+snp_positions = identify_snp_positions(snp_file)
+
+# Create class to define gene annotation objects:
+class GeneAnnotation(object):
+#   Initialization statement with an argument for each piece of information for an annotation:
+    def __init__(self, start_position, end_position, description, strand):
+        self.start_position = start_position
+        self.end_position = end_position
+        self.description = description
+        self.strand = strand
+
+# Define function to create gene annotation class objects from annotation file:
+def create_annotations(annotation_file):
+#   Create empty list for gene annotation class objects:
+    annotation_objects_list = []
+#   Open gene annotation file:
+    with open(annotation_file, 'r') as infile2:
+#       For every gene annotation, create an instance of the GeneAnnotation class, and append it to the empty list:
+        for line in infile2:
+            if not line.startswith('Start'):
+                temp1 = line.strip('\n').split('\t')
+                annotation_objects_list.append(GeneAnnotation(int(temp1[0]), int(temp1[1]), temp1[2], temp1[3]))
+#   Return list of gene annotation objects
+    return annotation_objects_list
+
+annotations_list = create_annotations(annotation_file)
+
+# Define function to test which gene a SNP occurs in, or whether it is intergenic
+def test_intergenic(list_of_snp_positions, list_of_GeneAnnotation_objects):
+    for position in list_of_snp_positions:
+        for annotation in list_of_GeneAnnotation_objects:
+            if position in range(annotation.start_position, annotation.end_position+1):
+                print "SNP at position " + str(position) + " is in gene:" + str(annotation.description)
+                break
+            else:
+                continue
+        else:
+            print "SNP at position " + str(position) + " is intergenic."
+
+test_intergenic(snp_positions, annotations_list)
