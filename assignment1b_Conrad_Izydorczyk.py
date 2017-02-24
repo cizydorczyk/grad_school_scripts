@@ -1,5 +1,33 @@
 """This script takes two arguments: file with SNPs (.txt), and gene annotation file (tab separated)"""
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PSEUDOCODE:
+
+# Create empty list of SNP positions
+# Open file with SNPs:
+#    For line in file:
+#        If the line is not the header (first line) and not a duplicate:
+#            Add SNP position to empty list of SNP positions
+
+# Create empty list of gene annotation items
+# Open file with gene annotations:
+#    For line in file:
+#        If line is not header (first line):
+#            Create gene annotation item for line
+#            Add item to empty list of annotation items
+
+# For every SNP position:
+#    For every gene annotation item:
+#        If SNP position falls within gene:
+#            Print gene description
+#        Else:
+#            Test next gene annotation item
+#    If SNP position not found in any genes:
+#        Print SNP is intergenic
+
+# CODE BELOW:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # From sys module, import function argv
 from sys import argv
 
