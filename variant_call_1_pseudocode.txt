@@ -1,0 +1,19 @@
+For every variant:
+    if variant passes high quality filtering criteria:
+        record high quality variant position
+
+for every variant:
+    if variant position in list of high quality positions:
+        if variant passes lower quality filtering criteria:
+            record variant as SNP
+
+for every high quality position:
+    if there is a variant at that position:
+        if alternate calls account for > 80% of reads:
+            record alternate base
+        elif reference calls account for > 80% of reads:
+            record reference base
+        elif alternate calls account for 20-80% of reads:
+            record ambiguous position
+    else:
+        record reference base at that position
