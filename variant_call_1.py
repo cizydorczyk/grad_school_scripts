@@ -1,6 +1,7 @@
 import itertools
 from sys import argv
 import os.path
+from oset import oset
 
 script, log_file, vcf_file_list, positions_output_file, output_fasta = argv
 
@@ -86,10 +87,9 @@ def hq_positions_list(variantobjectslist, indelpositionlist):
                     if (float(variant.dp4[2]) / float(variant.dp4[3])) > HQS_MIN_DP_PER and (float(variant.dp4[3]) / float(variant.dp4[2])) > HQS_MIN_DP_PER:
                         if variant.pos >= HQS_MIN_DIST and variant.pos <= (HQS_REF_LENGTH - HQS_MIN_DIST):
                             if variant.pos not in itertools.chain.from_iterable([range(indel - HQS_MIN_DIST, indel + HQS_MIN_DIST + 1) for indel in indelpositionlist]):
-                                if variant.pos not in set(hq_positions_list1):
-                                    hq_positions_list1.append(variant.pos)
-                                    hq_ref_dict[variant.pos] = variant.ref
-                                    hq_pos_count += 1
+                                hq_positions_set1.add(variant.pos)
+                                hq_ref_dict[variant.pos] = variant.ref
+                                hq_pos_count += 1
     print "High quality positions identified in file: " + '\t' + str(hq_pos_count)
     infile0.write("High quality positions identified in file: " + '\t' + str(hq_pos_count) + '\n')
 
@@ -108,7 +108,8 @@ def list_of_SNPs(variantobjectsset, indelpositionlist, hqpositionsset):
     return list_of_snps
 
 # Define function to call variants as SNPs or reference calls, or ambiguous:
-def call_SNP(listofsnps, hqpositionslist, hqrefdict):
+def call_SNP(listofsnps, hqpositionslist, hqrefdict, line):
+    snp_records = []
     sequence = ''
     snp_count = 0
     ref_count = 0
@@ -119,6 +120,7 @@ def call_SNP(listofsnps, hqpositionslist, hqrefdict):
                  if ((float(snp.dp4[2])+float(snp.dp4[3])) / (float(snp.dp4[0]) + float(snp.dp4[1]) + float(snp.dp4[2]) + float(snp.dp4[3]))) >= 0.80:
                      sequence += snp.alt
                      snp_count += 1
+                     snp_records.append(str(snp.pos) + '\t' + snp.ref + '\t' + snp.alt)
                      break
                  elif 0.20 <= ((float(snp.dp4[2])+float(snp.dp4[3])) / (float(snp.dp4[0]) + float(snp.dp4[1]) + float(snp.dp4[2]) + float(snp.dp4[3]))) < 0.80:
                      sequence += "N"
@@ -139,6 +141,12 @@ def call_SNP(listofsnps, hqpositionslist, hqrefdict):
     infile0.write("Reference bases called: " + '\t' + str(ref_count) + '\n')
     infile0.write("Ambiguous bases called: " + '\t' + str(amb_count) + '\n')
 
+# ***Specify output directory for snp file list in line below:
+    outfile6 = '/home/conrad/Data/160902_NextSeq/primary_project/snp_calls_D17/snp_text_files/' + line.split('/')[-1].split('_')[0]+'.txt'
+    outfile7 = open(outfile6, 'w')
+    outfile7.write("position" + '\t' + "reference" + '\t' + "alternate" + '\n')
+    outfile7.write('\n'.join(snp_records))
+    outfile7.close()
 
     return sequence
 
@@ -147,7 +155,7 @@ def call_SNP(listofsnps, hqpositionslist, hqrefdict):
 infile0 = open(log_file, 'w')
 
 # Initialize high quality positions list for all isolates:
-hq_positions_list1 = []
+hq_positions_set1 = set()
 # Initialize high quality positions and reference bases dictionary; used to call reference base at high
 # quality positions that may be absent in a given vcf file:
 hq_ref_dict = {}
@@ -169,18 +177,18 @@ with open(vcf_file_list, 'r') as infile1:
 
         print "Creating list of high quality variant positions..."
         hq_positions_list(variant_objects, indel_positions) # doesn't need to return anything because this function appends to the global list "hq_positions_list1"...
-        print "Total high quality variant positions identified: " + str(len(hq_positions_list1))
-        infile0.write("Total high quality variant positions identified: " + '\t' + str(len(hq_positions_list1)) + '\n' + '\n')
+        print "Total high quality variant positions identified: " + str(len(hq_positions_set1))
+        infile0.write("Total high quality variant positions identified: " + '\t' + str(len(hq_positions_set1)) + '\n' + '\n')
 
 # Sort hq_positions_list in ascending numerical order:
-hq_positions_list1.sort()
+hq_positions_list1 = sorted(hq_positions_set1)
 
+# Convert hq_positions_list to a set for faster membership testing in list_of_SNPs() function call:
+hq_positions_set2 = oset(hq_positions_list1)
 # Write positions to output file:
 with open(positions_output_file, 'w') as outfile0:
     for i in hq_positions_list1:
         outfile0.write(str(i) + '\n')
-# Convert hq_positions_list to a set for faster membership testing in list_of_SNPs() function call:
-hq_positions_set = set(hq_positions_list1)
 
 # Parse each vcf file and identify possible SNPs using relaxed filtering criteria compared to hq_positions_list() function:
 with open(vcf_file_list, 'r') as infile2:
@@ -194,12 +202,12 @@ with open(vcf_file_list, 'r') as infile2:
         indel_positions = indel_position_list(variant_objects)
 
         print "Creating list of possible SNPs..."
-        list_of_snps = list_of_SNPs(variant_objects_set, indel_positions, hq_positions_set)
+        list_of_snps = list_of_SNPs(variant_objects_set, indel_positions, hq_positions_set2)
         print "Possible SNPs identified: " + str(len(list_of_snps))
         infile0.write("Possible SNPs identified: " + '\t' + str(len(list_of_snps)) + '\n')
 
         print "Compiling isolate variant sequence..."
-        sequence = call_SNP(list_of_snps, hq_positions_list1, hq_ref_dict)
+        sequence = call_SNP(list_of_snps, hq_positions_list1, hq_ref_dict, line)
         print "Bases in sequence: " + '\t' + str(len(sequence))
         infile0.write("Bases in sequence: " + '\t' + str(len(sequence)) + '\n' + '\n')
 
