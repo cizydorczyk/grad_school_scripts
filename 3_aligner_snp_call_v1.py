@@ -192,7 +192,7 @@ for bwa, novo, last in itertools.izip(bwa25_list, novo25_list, last25_list):
             sequence += hq_pos_dict[position]
 
     # Write sequences and snps called for each isolate to files:
-    
+
     if os.path.isfile(outputfasta):
         with open(outputfasta, 'a') as outfile1:
             outfile1.write('>' + bwa.split('/')[-1].split('_')[0] + '\n')
