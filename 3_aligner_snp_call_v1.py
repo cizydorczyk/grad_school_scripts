@@ -137,11 +137,11 @@ for position in hq_pos_combined:
 hq_pos_list = list(hq_pos_combined)
 hq_pos_list.sort()
 
-# # Write hq SNP positions and reference bases to file:
-# with open(output_positions_file, 'w') as outfile1:
-#     outfile1.write("Position" + '\t' + "Ref" + '\n')
-#     for i in sorted(hq_pos_dict):
-#         outfile1.write(str(i) + '\t' + str(hq_pos_dict[i]) + '\n')
+# Write hq SNP positions and reference bases to file:
+with open(output_positions_file, 'w') as outfile1:
+    outfile1.write("Position" + '\t' + "Ref" + '\n')
+    for i in sorted(hq_pos_dict):
+        outfile1.write(str(i) + '\t' + str(hq_pos_dict[i]) + '\n')
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Identify SNPs in each isolate
