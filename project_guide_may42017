@@ -1,0 +1,14 @@
+1. identify reference
+2. identify variants
+  singletons (keep, but remove columns w/ Ns, but not if they have variant AND N)
+  parsimony informative sites
+  Synonymous vs. non-synonymous
+  Annotations
+  Nearest gene (if intragenic)
+3. construct phylogeny
+4. structure (population structure analysis) & recombination (separate)
+
+Assemblies:
+de novo assembly
+annotation
+orthomcl
