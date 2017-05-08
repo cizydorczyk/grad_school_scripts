@@ -123,28 +123,34 @@ for i in sorted(snps_dict):
         codon = ''
         # Identify reference codon, depending on position in codon alternate
         # base falls in, but recording the reference codon:
-        print sample_sequence
+
         if (snp_index + 1) % 3 == 0:
             try:
                 print 't1'
-                codon = ''.join(sample_sequence[(snp_index-2):(snp_index + 1)])
+                codon = ''.join([sample_sequence[snp_index-2], sample_sequence[snp_index-1], sample_sequence[snp_index]])
             except IndexError:
                 print 'e1'
                 codon = 'NN' + sample_sequence[snp_index]
-        elif (snp_index + 1) % 3 != 0 and (snp_index + 2) % 3 == 0:
+            print codon
+
+        elif (snp_index + 2) % 3 == 0:
             try:
                 print 't2'
-                codon = ''.join(sample_sequence[(snp_index-1):(snp_index+2)])
+                codon = ''.join([sample_sequence[snp_index-1], sample_sequence[snp_index], sample_sequence[snp_index+1]])
             except IndexError:
                 print 'e2'
                 codon = 'N' + sample_sequence[snp_index] + 'N'
-        elif (snp_index + 1) % 3 != 0 and (snp_index + 3) % 3 == 0:
+            print codon
+
+        elif (snp_index + 3) % 3 == 0:
             try:
                 print 't3'
-                codon = ''.join(sample_sequence[snp_index:(snp_index + 3)])
+                codon = ''.join([sample_sequence[snp_index], sample_sequence[snp_index+1], sample_sequence[snp_index+2]])
             except IndexError:
                 print 'e3'
                 codon = sample_sequence[snp_index] + 'NN'
+            print codon
+
         # Insert alternate base into reference sequence:
         sample_sequence[snp_index] = alt_base
 
@@ -155,51 +161,61 @@ for i in sorted(snps_dict):
          # Identify alternate codon based on position in codon of alternate base,
          # this time including alternate base:
         if (snp_index + 1) % 3 == 0:
-            position_in_codon = 3
             try:
-                print 'at1'
-                codon_alt = ''.join(sample_sequence[(snp_index-2):(snp_index + 1)])
+                print 't1'
+                codon_alt = ''.join([sample_sequence[snp_index-2], sample_sequence[snp_index-1], sample_sequence[snp_index]])
             except IndexError:
-                print 'ae1'
+                print 'e1'
                 codon_alt = 'NN' + sample_sequence[snp_index]
-        elif (snp_index + 1) % 3 != 0 and (snp_index + 2) % 3 == 0:
-            position_in_codon = 2
+            print codon_alt
+
+        elif (snp_index + 2) % 3 == 0:
             try:
-                print 'at2'
-                codon_alt = ''.join(sample_sequence[(snp_index-1):(snp_index+2)])
+                print 't2'
+                codon_alt = ''.join([sample_sequence[snp_index-1], sample_sequence[snp_index], sample_sequence[snp_index+1]])
             except IndexError:
-                print 'ae2'
+                print 'e2'
                 codon_alt = 'N' + sample_sequence[snp_index] + 'N'
-        elif (snp_index + 1) % 3 != 0 and (snp_index + 3) % 3 == 0:
-            position_in_codon = 1
+            print codon_alt
+
+        elif (snp_index + 3) % 3 == 0:
             try:
-                print 'at3'
-                codon_alt = ''.join(sample_sequence[snp_index:(snp_index + 3)])
+                print 't3'
+                codon_alt = ''.join([sample_sequence[snp_index], sample_sequence[snp_index+1], sample_sequence[snp_index+2]])
             except IndexError:
-                print 'ae3'
+                print 'e3'
                 codon_alt = sample_sequence[snp_index] + 'NN'
+            print codon_alt
 
 
         print codon, codon_alt, i
 
 
         # Identify ref and alt aa:
-        ref_aa = codons[codon]
+        ref_aa = ''
+        if 'N' not in codon:
+            ref_aa = codons[codon]
+        elif 'N' in codon:
+            ref_aa = 'X'
         alt_aa = ''
         if 'N' not in codon_alt:
             alt_aa = codons[codon_alt]
         elif 'N' in codon_alt:
-            alt_aa = '-'
+            alt_aa = 'X'
 
         # Type of codon/aa change:
         codon_change = ''
 
         if ref_aa == alt_aa:
-            codon_change = "synonymous"
+            if ref_aa == 'X' and alt_aa == 'X':
+                codon_change = "ambiguous"
+            else:
+                codon_change = "synonymous"
+
         elif ref_aa != alt_aa:
             if alt_aa == '*':
                 codon_change = "stop"
-            elif alt_aa == '-':
+            elif alt_aa == 'X':
                 codon_change = "ambiguous"
             else:
                 codon_change = "non-synonymous"
@@ -245,5 +261,6 @@ alternate base, position in gene (1-based), ref codon, alt codon, position in co
 ref aa, alt aa, type, Sequence, Locus Tag, Feature Type, Start, End, Strand, Name, Product Name, Accession, \
 GI, Length (nuc), MW (predicted), Length (aa), Nucleotide Sequence, Amino Acid Sequence' + '\n' + '## Intergenic \
 annotation format:' + '\n' + '## position, ref base, alt base, position in region (1-based), intergenic, start, end, length of intergenic region, left gene, \
- right gene, type' + '\n' + '## RRL = Regulatory Region Left, RRN = Regulatory Region None, RRR = Regulatory Region Right' + '\n')
+right gene, type' + '\n' + '## RRL = Regulatory Region Left, RRN = Regulatory Region None, RRR = Regulatory Region Right' + '\n' + '## \
+If ref aa or alt aa = -- or -, it likely comes from a non-coding sequence' + '\n')
     outfile37.write('\n'.join(to_file))
