@@ -1,6 +1,6 @@
 from sys import argv
 
-script, tab_annotation, GTF_intron_annotation, snps_file, ann_file_out = argv
+script, tab_annotation, GTF_intron_annotation, snps_file = argv
 
 # Create table of codons:
 codons = {'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A', 'TGC':'C', 'TGT':'C', 'GAC':'D', 'GAT':'D',\
@@ -102,9 +102,9 @@ def lookup_bounds(bounds, value):
 sorted_TAB_ann_bounds = sorted(TAB_ann_dict)
 sorted_GTF_intron_ann_bounds = sorted(GTF_intron_ann_dict)
 
+#~~~~~~~~~~~~~~~~~~~~Actual heavy lifting script ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Output list:
 to_file = []
-
 # For every snp in snps dictionary:
 for i in sorted(snps_dict):
     # Identify genic region snp falls in:
@@ -151,4 +151,116 @@ for i in sorted(snps_dict):
                 codon = sample_sequence[snp_index] + 'NN'
             print codon
 
-        print snp_pos
+        # Insert alternate base into reference sequence:
+        sample_sequence[snp_index] = alt_base
+
+        # Alt codon:
+        codon_alt = ''
+        # Position in codon:
+        position_in_codon = ''
+         # Identify alternate codon based on position in codon of alternate base,
+         # this time including alternate base:
+        if (snp_index + 1) % 3 == 0:
+            try:
+                print 't1'
+                codon_alt = ''.join([sample_sequence[snp_index-2], sample_sequence[snp_index-1], sample_sequence[snp_index]])
+                position_in_codon = 3
+            except IndexError:
+                print 'e1'
+                codon_alt = 'NN' + sample_sequence[snp_index]
+                position_in_codon = 3
+            print codon_alt
+
+        elif (snp_index + 2) % 3 == 0:
+            try:
+                print 't2'
+                codon_alt = ''.join([sample_sequence[snp_index-1], sample_sequence[snp_index], sample_sequence[snp_index+1]])
+                position_in_codon = 2
+            except IndexError:
+                print 'e2'
+                codon_alt = 'N' + sample_sequence[snp_index] + 'N'
+                position_in_codon = 2
+            print codon_alt
+
+        elif (snp_index + 3) % 3 == 0:
+            try:
+                print 't3'
+                codon_alt = ''.join([sample_sequence[snp_index], sample_sequence[snp_index+1], sample_sequence[snp_index+2]])
+                position_in_codon = 1
+            except IndexError:
+                print 'e3'
+                codon_alt = sample_sequence[snp_index] + 'NN'
+                position_in_codon = 1
+            print codon_alt
+
+
+        print codon, codon_alt, i
+
+
+        # Identify ref and alt aa:
+        ref_aa = ''
+        if 'N' not in codon:
+            ref_aa = codons[codon]
+        elif 'N' in codon:
+            ref_aa = 'X'
+        alt_aa = ''
+        if 'N' not in codon_alt:
+            alt_aa = codons[codon_alt]
+        elif 'N' in codon_alt:
+            alt_aa = 'X'
+
+        # Type of codon/aa change:
+        codon_change = ''
+
+        if ref_aa == alt_aa:
+            if ref_aa == 'X' and alt_aa == 'X':
+                codon_change = "ambiguous"
+            else:
+                codon_change = "synonymous"
+
+        elif ref_aa != alt_aa:
+            if alt_aa == '*':
+                codon_change = "stop"
+            elif alt_aa == 'X':
+                codon_change = "ambiguous"
+            else:
+                codon_change = "non-synonymous"
+
+        # Create desired output for genic region; note that 1 is added to snp_index to make it 1-based (was 0-based above):
+        output_line = [str(i), snps_dict[i][0], snps_dict[i][1], str((snp_index + 1)), codon, codon_alt, \
+        str(position_in_codon), ref_aa, alt_aa, codon_change] + TAB_ann_dict[bound].record[0:13]
+
+        output_line2 = '\t'.join(output_line)
+        print output_line2
+
+        # Append desired output to output list:
+        to_file.append(output_line2)
+
+        # RRL = regulatory region left (gene)
+        # RRR = regulatory region right (gene)
+        # RRN = regulatory region none
+
+    # Elif snp is not in genic region:
+    elif bound is None:
+        type_ = ''
+        # Identify intergenic region snp is in:
+        bound2 = lookup_bounds(sorted_GTF_intron_ann_bounds, i)
+        # Determine type of intergenic snp (RRL, RRN, RRR):
+        if bound2 is not None:
+            min_, max_ = bound2
+            min_bound = min_ + 150
+            max_bound = max_ - 150
+            if min_ <= i <= min_bound:
+                type_ = 'RRL'
+            elif max_bound <= i <= max_:
+                type_ = 'RRR'
+            else:
+                type_ = 'RRN'
+            # Determine intergenic 1-based position of snp in intergenic region:
+            intergenic_index = (int(i) - min_) + 1
+            # Create desired output line:
+            to_file2 = str(i) + '\t' + snps_dict[i][0] + '\t' + snps_dict[i][1] + '\t' + str(intergenic_index) + '\t' + GTF_intron_ann_dict[bound2] + '\t' + type_
+            # Append output line to output file:
+            to_file.append(to_file2)
+
+

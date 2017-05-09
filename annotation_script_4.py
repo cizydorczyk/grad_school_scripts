@@ -47,7 +47,7 @@ class tab_annotation_object(object):
         self.MW = MW
         self.length_aa = length_aa
         self.nuc_seq = nuc_seq
-        self.aa_seq =  aa_seq
+        self.aa_seq = aa_seq
         self.record = record
 
 # Parse gene annotation file, creating class object for each annotation:
@@ -164,27 +164,33 @@ for i in sorted(snps_dict):
             try:
                 print 't1'
                 codon_alt = ''.join([sample_sequence[snp_index-2], sample_sequence[snp_index-1], sample_sequence[snp_index]])
+                position_in_codon = 3
             except IndexError:
                 print 'e1'
                 codon_alt = 'NN' + sample_sequence[snp_index]
+                position_in_codon = 3
             print codon_alt
 
         elif (snp_index + 2) % 3 == 0:
             try:
                 print 't2'
                 codon_alt = ''.join([sample_sequence[snp_index-1], sample_sequence[snp_index], sample_sequence[snp_index+1]])
+                position_in_codon = 2
             except IndexError:
                 print 'e2'
                 codon_alt = 'N' + sample_sequence[snp_index] + 'N'
+                position_in_codon = 2
             print codon_alt
 
         elif (snp_index + 3) % 3 == 0:
             try:
                 print 't3'
                 codon_alt = ''.join([sample_sequence[snp_index], sample_sequence[snp_index+1], sample_sequence[snp_index+2]])
+                position_in_codon = 1
             except IndexError:
                 print 'e3'
                 codon_alt = sample_sequence[snp_index] + 'NN'
+                position_in_codon = 1
             print codon_alt
 
 
