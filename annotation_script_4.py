@@ -62,15 +62,18 @@ with open(tab_annotation, 'r') as infile2:
             line.pop(12)
             line.pop(8)
 
-            if len(line) == 15:
-                TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+            TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
                 line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
                 line[11], line[12], line[13], line[14], line)
-            elif len(line) == 14:
-                line.append('-')
-                TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
-                line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
-                line[11], line[12], line[13], line[14], line)
+            # if len(line) == 15:
+            #     TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+            #     line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+            #     line[11], line[12], line[13], line[14], line)
+            # elif len(line) == 14:
+            #     line.append('-')
+            #     TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+            #     line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+            #     line[11], line[12], line[13], line[14], line)
 
 
 # Parse snps file:

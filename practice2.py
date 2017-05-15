@@ -1,94 +1,73 @@
-"""
-for each high quality position:
-    for each isolate:
-        if an object with that position exists for the isolate:
-            test if SNP, REF, or N
-        elif an object with that position does not exist for the isolate:
-            record REF
-
-"""
-
 from sys import argv
 
-script, bwa6, novo6 ,last6 = argv
+script, tab_annotation, GTF_intron_annotation, snps_file = argv
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Define functions and classes
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# Define VcfVariants class. Allows easy access to different fields of a variant:
-class VcfVariant(object):
-    def __init__(self, chrom, pos, ref, alt, quality, dp, dp4, isolateid, variantid, caller):
-        self.chrom = chrom
-        self.pos = pos
-        self.ref = ref
-        self.alt = alt
-        self.quality = quality
-        self.dp = dp
-        self.dp4 = dp4
-        self.isolateid = isolateid
-        self.variantid = variantid
-        self.caller = caller
-    def __repr__(self):
-        return str(self.caller)
-
-# Define function to parse VCF files and create VcfVariant class objects for each variant:
-def parse_vcf(vcf_file):
-    variant_objects_list_1 = []
-    with open(vcf_file, 'r') as infile:
-        for line in infile:
-            if not line.startswith("#"):
-                temp1 = line.split('\t')
-                temp1.pop(9)
-                temp1.pop(8)
-                temp1.pop(6)
-                temp1.pop(2)
-                temp2 = temp1.pop(5).split(";")
-                for item in temp2:
-                    if item.startswith("DP="):
-                        temp1.append(item[3:])
-                    elif item.startswith("DP4="):
-                        temp1.append(item[4:].split(','))
-                temp1.append(vcf_file.split('/')[-1].split('_')[0])
-                temp1.append(temp1[-1]+ "_" + temp1[1])
-                temp1.append(vcf_file.split('/')[-1].split('_')[1].split('.')[0])
-                variant_objects_list_1.append(VcfVariant(temp1[0], int(temp1[1]), temp1[2], temp1[3], float(temp1[4]), int(temp1[5]), temp1[6], temp1[7], temp1[8], temp1[9]))
-    return variant_objects_list_1
-
-# Define class for variant list objects:
-class VariantListObject(object):
-    def __init__(self, variant_list):
-        self.variant_list = variant_list
-
-    def positions_list(self):
-        pos_list = []
-        for i in self.variant_list:
-            pos_list.append(i.pos)
-        return pos_list
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bwa_objects = parse_vcf(bwa6)
-novo_objects = parse_vcf(novo6)
-last_objects = parse_vcf(last6)
-
-bwa_list_object = VariantListObject(bwa_objects)
-bwa_pos_list = bwa_list_object.positions_list()
-
-novo_list_object = VariantListObject(novo_objects)
-novo_pos_list = novo_list_object.positions_list()
-
-last_list_object = VariantListObject(last_objects)
-last_pos_list = last_list_object.positions_list()
-
-bwa_intersect = [i for i in bwa_objects if i.pos in novo_pos_list and i.pos in last_pos_list]
-print len(bwa_intersect)
-
-novo_intersect = [i for i in novo_objects if i.pos in bwa_pos_list and i.pos in last_pos_list]
-print len(novo_intersect)
-
-last_intersect = [i for i in last_objects if i.pos in bwa_pos_list and i.pos in novo_pos_list]
-print len(last_intersect)
+# Create table of codons:
+codons = {'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A', 'TGC':'C', 'TGT':'C', 'GAC':'D', 'GAT':'D',\
+'GAA':'E', 'GAG':'E', 'TTC':'F', 'TTT':'F', 'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G', 'CAC':'H', \
+'CAT':'H', 'ATA':'I', 'ATC':'I', 'ATT':'I', 'AAA':'K', 'AAG':'K', 'TTA':'L', 'TTG':'L', 'CTA':'L', \
+'CTC':'L', 'CTG':'L', 'CTT':'L', 'ATG':'M', 'AAC':'N', 'AAT':'N', 'CCA':'P', 'CCC':'P', 'CCG':'P', \
+'CCT':'P', 'CAA':'Q', 'CAG':'Q', 'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R', 'AGA':'R', 'AGG':'R', \
+'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S', 'AGC':'S', 'AGT':'S', 'ACA':'T', 'ACC':'T', 'ACG':'T', \
+'ACT':'T', 'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V', 'TGG':'W', 'TAC':'Y', 'TAT':'Y', 'TAA':'*', \
+'TAG':'*', 'TGA':'*'}
 
 
+# Intergenic annotation format:
+# type (intergenic), start, end, length of intergenic region, left gene, right gene
+# Parse intergenic annotation file:
+GTF_intron_ann_dict = {}
+with open(GTF_intron_annotation, 'r') as infile1:
+    for line in infile1:
+        if 'intergenic' in line:
+            line = line.strip().split('\t')
+            new_line = [line[2], line[3], line[4], str(int(line[4])-int(line[3]) + 1), line[8].split(';')[3].split(' ')[2].strip('"'), line[8].split(';')[4].split(' ')[2].strip('"')]
+            key = (int(line[3]), int(line[4]))
+            GTF_intron_ann_dict[key] = '\t'.join(new_line)
+# Genic annotation format:
+# Sequence, Locus Tag, Feature Type, Start, End, Strand, Name, Product Name, Accession,
+# GI, Length (nucleotides), MW (predicted), Length (amino acids), Nucleotide Sequence,
+# Amino Acid Sequence
 
-#objects_intersect = [i for i in bwa_objects if i.pos in [j.pos for j in novo_objects] and i.pos in [k.pos for k in last_objects]]
-#print len(objects_intersect)
+# Create class for gene annotation objects:
+class tab_annotation_object(object):
+    def __init__(self, sequence, locus_tag, feature_type, start, end, strand, name, product_name, \
+    accession, GI, length_nuc, MW, length_aa, nuc_seq, aa_seq, record):
+        self.sequence = sequence
+        self.locus_tag = locus_tag
+        self.feature_type = feature_type
+        self.start = start
+        self.end = end
+        self.strand = strand
+        self.name = name
+        self.product_name = product_name
+        self.accession = accession
+        self.GI = GI
+        self.length_nuc = length_nuc
+        self.MW = MW
+        self.length_aa = length_aa
+        self.nuc_seq = nuc_seq
+        self.aa_seq =  aa_seq
+        self.record = record
+
+# Parse gene annotation file, creating class object for each annotation:
+TAB_ann_dict = {}
+with open(tab_annotation, 'r') as infile2:
+    for line in infile2:
+        if not line.startswith("#") and not line.startswith("Sequence"):
+            line = line.strip().split('\t')
+            key = (int(line[3]), int(line[4]))
+            line.pop(15)
+            line.pop(14)
+            line.pop(12)
+            line.pop(8)
+
+            if len(line) == 15:
+                TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+                line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+                line[11], line[12], line[13], line[14], line)
+            elif len(line) == 14:
+                line.append('-')
+                TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+                line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+                line[11], line[12], line[13], line[14], line)

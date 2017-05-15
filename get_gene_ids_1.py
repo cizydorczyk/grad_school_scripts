@@ -1,6 +1,7 @@
 from sys import argv
+import os.path
 
-script, input_annotation = argv
+script, input_annotation, output_gene_list, isolate_records_output = argv
 
 class GenicAnnotationObject(object):
     def __init__(self, snp_pos, ref_base, alt_base, pos_in_gene, ref_codon, alt_codon, pos_in_codon, ref_aa, alt_aa, \
@@ -42,4 +43,32 @@ with open(input_annotation, 'r') as infile:
                                                           , annotation[16], annotation[17], annotation[18], annotation[19]\
                                                           , annotation[20], annotation[21], annotation[22]))
 
-print len(gene_annotations)
+print 'number of genic annotations', len(gene_annotations)
+
+known_gene_ids = []
+unknown_gene_ids = []
+
+for i in gene_annotations:
+    if 'NA' not in i.accession:
+        known_gene_ids.append(i.accession)
+    else:
+        unknown_gene_ids.append(i.accession)
+
+known_gene_ids_set = set(known_gene_ids)
+
+isolate_record = str(input_annotation.split('/')[-1].split('_')[0]) + '\t' + str(len(gene_annotations)) + '\t' + \
+    str(len(known_gene_ids)) + '\t' + str(len(unknown_gene_ids)) + '\t' + str(len(known_gene_ids_set))
+print isolate_record
+
+with open(output_gene_list, 'w') as outfile:
+    outfile.write('\n'.join(known_gene_ids_set))
+
+if not os.path.isfile(isolate_records_output):
+    with open(isolate_records_output, 'w') as outfile2:
+        outfile2.write('Isolate' + '\t' + 'Tot # Genic SNPs' + '\t' + '# Known Acc' + '\t' +
+                       '# Unknown Acc' + '\t' + '# Unique Gene Acc' + '\n')
+        outfile2.write(isolate_record + '\n')
+
+elif os.path.isfile(isolate_records_output):
+    with open(isolate_records_output, 'a') as outfile2:
+        outfile2.write(isolate_record + '\n')
