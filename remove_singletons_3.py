@@ -1,7 +1,7 @@
 from sys import argv
 import pandas
 
-script, fasta, positions_file, output_fasta, output_positions = argv
+script, fasta, positions_file, output_fasta, output_positions, removed_positions_file = argv
 
 # Create dictionary of fasta sequences, with header as key and sequence as value:
 infile_dict = {}
@@ -100,3 +100,9 @@ with open(output_fasta, 'w') as outfile:
 with open(output_positions, 'w') as outfile2:
     for position in positions_list:
         outfile2.write(str(position) + '\n')
+
+
+# Write removed positions to file:
+with open(removed_positions_file, 'w') as outfile3:
+    outfile3.write('\n'.join(n_tons) + '\n')
+    outfile3.write('\n'.join(identicals))

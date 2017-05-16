@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="92a03c40-5c96-46d3-91f2-15aba5c93911" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/2_aligner_snp_call.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/2_aligner_snp_call_read_me.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/filter_isolate_snps_1.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/get_pel_snps_1.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/get_psl_snps_1.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/indel_annotation_script_1.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/annotation_script_4.py" afterPath="$PROJECT_DIR$/annotation_script_4.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/get_gene_ids_1.py" afterPath="$PROJECT_DIR$/get_gene_ids_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/practice2.py" afterPath="$PROJECT_DIR$/practice2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/remove_singletons_3.py" afterPath="$PROJECT_DIR$/remove_singletons_3.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,30 +37,7 @@
     <favorites_list name="grad_school_scripts" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="2_aligner_snp_call.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/2_aligner_snp_call.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1087">
-              <caret line="107" column="13" lean-forward="false" selection-start-line="107" selection-start-column="13" selection-end-line="107" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="2_aligner_snp_call_read_me.txt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/2_aligner_snp_call_read_me.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="107" column="50" lean-forward="true" selection-start-line="107" selection-start-column="50" selection-end-line="107" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -79,13 +56,18 @@
         <option value="$PROJECT_DIR$/vcf_variant_caller_1.py" />
         <option value="$PROJECT_DIR$/totalposlist.py" />
         <option value="$PROJECT_DIR$/vcf_variant_caller_2.py" />
-        <option value="$PROJECT_DIR$/remove_singletons_3.py" />
         <option value="$PROJECT_DIR$/practice.py" />
         <option value="$PROJECT_DIR$/practice2.py" />
-        <option value="$PROJECT_DIR$/annotation_script_4.py" />
         <option value="$PROJECT_DIR$/get_gene_ids_1.py" />
-        <option value="$PROJECT_DIR$/2_aligner_snp_call.py" />
         <option value="$PROJECT_DIR$/2_aligner_snp_call_read_me.txt" />
+        <option value="$PROJECT_DIR$/filter_isolate_snps_1.py" />
+        <option value="$PROJECT_DIR$/annotation_script_4.py" />
+        <option value="$PROJECT_DIR$/indel_annotation_script_1.py" />
+        <option value="$PROJECT_DIR$/2_aligner_snp_call.py" />
+        <option value="$PROJECT_DIR$/get_pel_snps_1.py" />
+        <option value="$PROJECT_DIR$/get_psl_snps_1.py" />
+        <option value="$PROJECT_DIR$/remove_singletons_3.py" />
+        <option value="$PROJECT_DIR$/remove_singletons_psl_pel_1.py" />
       </list>
     </option>
   </component>
@@ -96,8 +78,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1698" />
-    <option name="y" value="25" />
+    <option name="x" value="1716" />
+    <option name="y" value="133" />
     <option name="width" value="1570" />
     <option name="height" value="848" />
   </component>
@@ -427,7 +409,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1698" y="25" width="1570" height="848" extended-state="0" />
+    <frame x="1716" y="133" width="1570" height="848" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -435,7 +417,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286385" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2132964" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2132964" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10367454" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -493,26 +475,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/remove_singletons_3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/remove_singletons_3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vcf_variant_caller_2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -720,14 +682,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/add_reference_to_snp_alignment_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="24" lean-forward="true" selection-start-line="6" selection-start-column="24" selection-end-line="6" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -755,24 +709,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/remove_singletons_3.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="83" column="0" lean-forward="true" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/annotation_script_4.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1095">
-          <caret line="65" column="12" lean-forward="false" selection-start-line="65" selection-start-column="12" selection-end-line="66" selection-end-column="61" />
           <folding />
         </state>
       </provider>
@@ -821,16 +757,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/2_aligner_snp_call.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1087">
-          <caret line="107" column="13" lean-forward="false" selection-start-line="107" selection-start-column="13" selection-end-line="107" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/3_aligner_snp_call_v1_READ_ME.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1292">
@@ -844,6 +770,96 @@
         <state relative-caret-position="576">
           <caret line="107" column="50" lean-forward="true" selection-start-line="107" selection-start-column="50" selection-end-line="107" selection-end-column="50" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/annotation_script_4_read_me.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="27" lean-forward="true" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/annotation_script_4.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="502">
+          <caret line="137" column="0" lean-forward="false" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/indel_annotation_script_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="77" lean-forward="false" selection-start-line="2" selection-start-column="77" selection-end-line="2" selection-end-column="77" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filter_isolate_snps_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="14" selection-end-column="95" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2_aligner_snp_call.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="131" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/get_pel_snps_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="58" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/get_psl_snps_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="952">
+          <caret line="56" column="52" lean-forward="true" selection-start-line="56" selection-start-column="52" selection-end-line="56" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/add_reference_to_snp_alignment_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="37" lean-forward="true" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/remove_singletons_psl_pel_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/remove_singletons_3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="969">
+          <caret line="57" column="30" lean-forward="true" selection-start-line="57" selection-start-column="30" selection-end-line="57" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
