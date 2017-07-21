@@ -102,7 +102,7 @@ def filter1(cset, dset, gset, out1, out2):
         # append the full R1 read to file1 list, and the full R2 read to file2
         # list, since the two sets being iterated through are ordered and the
         # first item in set1 is paired with the first item in set2
-        if i.shortheader not in gset:
+        if i.shortheader in gset:
             #print i.shortheader
             file1.append(i.fullread)
             file2.append(j.fullread)

@@ -1,116 +1,106 @@
 from sys import argv
-import itertools
 
-script, bwa6, novo6 ,last6 = argv
+script, tab_annotation, GTF_intron_annotation, snps_file, ann_file_out = argv
 
-# Define function to get common positions from a set of vcf files and output it as a list:
-def get_common_positions(bwafile, novofile, lastfile):
-    bwa_positions = []
-    novo_positions = []
-    last_positions = []
-
-    with open(bwafile, 'r') as infile:
-        for line in infile:
-            if not line.startswith("#"):
-                bwa_positions.append(int(line.strip().split('\t')[1]))
-
-    with open(novofile, 'r') as infile:
-        for line in infile:
-            if not line.startswith("#"):
-                novo_positions.append(int(line.strip().split('\t')[1]))
-
-    with open(lastfile, 'r') as infile:
-        for line in infile:
-            if not line.startswith("#"):
-                last_positions.append(int(line.strip().split('\t')[1]))
-
-    hq_bwa_positions = set(bwa_positions)
-    hq_novo_positions = set(novo_positions)
-    hq_last_positions = set(last_positions)
-    hq_positions = (hq_bwa_positions & hq_novo_positions & hq_last_positions)
-
-    return hq_positions
-
-# Define VcfVariants class. Allows easy access to different fields of a variant:
-class VcfVariant(object):
-    def __init__(self, chrom, pos, ref, alt, quality, dp, dp4, isolateid, variantid):
-        self.chrom = chrom
-        self.pos = pos
-        self.ref = ref
-        self.alt = alt
-        self.quality = quality
-        self.dp = dp
-        self.dp4 = dp4
-        self.isolateid = isolateid
-        self.variantid = variantid
-
-# Define function to parse VCF files and create VcfVariant class objects for each variant:
-def parse_vcf(vcf_file):
-    variant_objects_list_1 = []
-    with open(vcf_file, 'r') as infile:
-        for line in infile:
-            if not line.startswith("#"):
-                temp1 = line.split('\t')
-                temp1.pop(9)
-                temp1.pop(8)
-                temp1.pop(6)
-                temp1.pop(2)
-                temp2 = temp1.pop(5).split(";")
-                for item in temp2:
-                    if item.startswith("DP="):
-                        temp1.append(item[3:])
-                    elif item.startswith("DP4="):
-                        temp1.append(item[4:].split(','))
-                temp1.append(vcf_file.split('/')[-1].split('_')[0])
-                temp1.append(temp1[-1]+ "_" + temp1[1])
-                variant_objects_list_1.append(VcfVariant(temp1[0], int(temp1[1]), temp1[2], temp1[3], float(temp1[4]), int(temp1[5]), temp1[6], temp1[7], temp1[8]))
-    return variant_objects_list_1
-
-# Define function to get common vcf variants, based on common positions list:
-def get_common_variants(common_positions_list, variant_objects_list):
-    common_list = []
-    for i in variant_objects_list:
-        if i.pos in common_positions_list:
-            common_list.append(i)
-    return common_list
-
-# Define function to call snps:
-def call_snps(bwasnp, novosnp, lastsnp):
-    call = ''
-    if ((float(bwasnp.dp4[0]) + float(bwasnp.dp4[1])) / (float(bwasnp.dp4[0]) + float(bwasnp.dp4[1]) + float(bwasnp.dp4[2]) + float(bwasnp.dp4[3]))) >= 0.80 \
-    and ((float(novosnp.dp4[0]) + float(novosnp.dp4[1])) / (float(novosnp.dp4[0]) + float(novosnp.dp4[1]) + float(novosnp.dp4[2]) + float(novosnp.dp4[3]))) >= 0.80 \
-    and ((float(lastsnp.dp4[0]) + float(lastsnp.dp4[1])) / (float(lastsnp.dp4[0]) + float(lastsnp.dp4[1]) + float(lastsnp.dp4[2]) + float(lastsnp.dp4[3]))) >= 0.80:
-        call = bwasnp.ref
-    elif ((float(bwasnp.dp4[0]) + float(bwasnp.dp4[1])) / (float(bwasnp.dp4[0]) + float(bwasnp.dp4[1]) + float(bwasnp.dp4[2]) + float(bwasnp.dp4[3]))) <= 0.20 \
-    and ((float(novosnp.dp4[0]) + float(novosnp.dp4[1])) / (float(novosnp.dp4[0]) + float(novosnp.dp4[1]) + float(novosnp.dp4[2]) + float(novosnp.dp4[3]))) <= 0.20 \
-    and ((float(lastsnp.dp4[0]) + float(lastsnp.dp4[1])) / (float(lastsnp.dp4[0]) + float(lastsnp.dp4[1]) + float(lastsnp.dp4[2]) + float(lastsnp.dp4[3]))) <= 0.20:
-        call = bwasnp.alt
-    else:
-        call = 'N'
-    return call
-
-# Identify common positions between 3 aligners:
-common_positions_25 = get_common_positions(bwa6, novo6, last6)
-
-# Create lists of variant objects for each aligner:
-bwa_objects = parse_vcf(bwa6)
-novo_objects = parse_vcf(novo6)
-last_objects = parse_vcf(last6)
-
-# Identify variant objects that have positions in the common positions list created above:
-bwa_filtered_list = get_common_variants(common_positions_25, bwa_objects)
-novo_filtered_list = get_common_variants(common_positions_25, novo_objects)
-last_filtered_list = get_common_variants(common_positions_25, last_objects)
-
-# Call SNPs for each set of 3 objects in filtered lists:
-dictt = {}
-for bwasnp, novosnp, lastsnp in itertools.izip(bwa_filtered_list, novo_filtered_list, last_filtered_list):
-    dictt[bwasnp.pos] = [bwasnp.ref, call_snps(bwasnp, novosnp, lastsnp)]
-
-print dictt
+# Create table of codons:
+codons = {'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A', 'TGC':'C', 'TGT':'C', 'GAC':'D', 'GAT':'D',\
+'GAA':'E', 'GAG':'E', 'TTC':'F', 'TTT':'F', 'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G', 'CAC':'H', \
+'CAT':'H', 'ATA':'I', 'ATC':'I', 'ATT':'I', 'AAA':'K', 'AAG':'K', 'TTA':'L', 'TTG':'L', 'CTA':'L', \
+'CTC':'L', 'CTG':'L', 'CTT':'L', 'ATG':'M', 'AAC':'N', 'AAT':'N', 'CCA':'P', 'CCC':'P', 'CCG':'P', \
+'CCT':'P', 'CAA':'Q', 'CAG':'Q', 'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R', 'AGA':'R', 'AGG':'R', \
+'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S', 'AGC':'S', 'AGT':'S', 'ACA':'T', 'ACC':'T', 'ACG':'T', \
+'ACT':'T', 'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V', 'TGG':'W', 'TAC':'Y', 'TAT':'Y', 'TAA':'*', \
+'TAG':'*', 'TGA':'*'}
 
 
+# Intergenic annotation format:
+# type (intergenic), start, end, length of intergenic region, left gene, right gene
+# Parse intergenic annotation file:
+GTF_intron_ann_dict = {}
+with open(GTF_intron_annotation, 'r') as infile1:
+    for line in infile1:
+        if 'intergenic' in line:
+            line = line.strip().split('\t')
+            new_line = [line[2], line[3], line[4], str(int(line[4])-int(line[3]) + 1), line[8].split(';')[3].split(' ')[2].strip('"'), line[8].split(';')[4].split(' ')[2].strip('"')]
+            key = (int(line[3]), int(line[4]))
+            GTF_intron_ann_dict[key] = '\t'.join(new_line)
+# Genic annotation format:
+# Sequence, Locus Tag, Feature Type, Start, End, Strand, Name, Product Name, Accession,
+# GI, Length (nucleotides), MW (predicted), Length (amino acids), Nucleotide Sequence,
+# Amino Acid Sequence
+
+# Create class for gene annotation objects:
+class tab_annotation_object(object):
+    def __init__(self, sequence, locus_tag, feature_type, start, end, strand, name, product_name, \
+    accession, GI, length_nuc, MW, length_aa, nuc_seq, aa_seq, record):
+        self.sequence = sequence
+        self.locus_tag = locus_tag
+        self.feature_type = feature_type
+        self.start = start
+        self.end = end
+        self.strand = strand
+        self.name = name
+        self.product_name = product_name
+        self.accession = accession
+        self.GI = GI
+        self.length_nuc = length_nuc
+        self.MW = MW
+        self.length_aa = length_aa
+        self.nuc_seq = nuc_seq
+        self.aa_seq = aa_seq
+        self.record = record
+
+# Parse gene annotation file, creating class object for each annotation:
+TAB_ann_dict = {}
+with open(tab_annotation, 'r') as infile2:
+    for line in infile2:
+        if not line.startswith("#") and not line.startswith("Sequence"):
+            line = line.strip().split('\t')
+            key = (int(line[3]), int(line[4]))
+            line.pop(15)
+            line.pop(14)
+            line.pop(12)
+            line.pop(8)
+            
+            TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+                line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+                line[11], line[12], line[13], line[14], line)
+            # if len(line) == 15:
+            #     TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+            #     line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+            #     line[11], line[12], line[13], line[14], line)
+            # elif len(line) == 14:
+            #     line.append('-')
+            #     TAB_ann_dict[key] = tab_annotation_object(line[0], line[1], line[2], \
+            #     line[3], line[4], line[5], line[6],line[7], line[8], line[9], line[10], \
+            #     line[11], line[12], line[13], line[14], line)
 
 
-#for i in bwa_filtered_list:
-#    print str(i.pos) + '\t' + str(i.ref) + '\t' + str(i.alt)
+# Parse snps file:
+snps_dict = {}
+with open(snps_file, 'r') as infile3:
+    for line in infile3:
+        if not line.startswith("Position"):
+            snps_dict[int(line.split('\t')[0])] = [line.strip().split('\t')[1], \
+            line.strip().split('\t')[2]]
+
+# Create function for testing if snp is in range of a gene/intergenic region:
+def lookup_bounds(bounds, value):
+    for min_, max_ in bounds:
+        # Don't have to test value < min because this is being run on a sorted
+        # list of tuples, so a value < min would have already been accepted in the
+        # previous tuple, and if it's not in any tuples, the elif statement
+        # covers that and returns something in the same step. It's broken down
+        # into two statements to speed things up,
+        # so that if the value is larger than the max of the tuple, it doesn't
+        # even bother testing the minimum (making two comparisons):
+        if value > max_:
+            continue
+        elif min_ <= value:
+            return min_, max_
+        else:
+            return
+
+# Create sorted tuple lists of keys for each annotation dictionary:
+sorted_TAB_ann_bounds = sorted(TAB_ann_dict)
+sorted_GTF_intron_ann_bounds = sorted(GTF_intron_ann_dict)
