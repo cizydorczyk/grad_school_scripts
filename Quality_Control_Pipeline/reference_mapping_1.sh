@@ -8,7 +8,7 @@ BCFTOOLS=/home/conrad/Software/bcftools-1.3.1/bcftools
 
 # Set project folder:
 
-PF=/home/conrad/Data/primary_project_3/reference_alignments/G38_lesb58/trouble_shooting
+PF=/home/conrad/Data/primary_project_3/reference_alignments/G49_PAO1
 
 # Set reads folder:
 
@@ -67,5 +67,3 @@ cd raw_vcf_files
 
 printf "${COLOR}Calling variants...${NC}\n"
 for i in $(cat $2); do $SAMTOOLS mpileup -ugf $PF/reference/reference.fasta $PF/sorted_indexed_bam_alignments/$i"_sorted_aln.bam" | $BCFTOOLS call -m -v --ploidy 1 --threads 8 -o $i"_raw_variants.vcf" -; done
-
-
