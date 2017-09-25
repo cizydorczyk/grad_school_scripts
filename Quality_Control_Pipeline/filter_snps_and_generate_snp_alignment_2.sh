@@ -10,17 +10,18 @@ REFGENOME=PAO1
 BCFTOOLS=/home/conrad/Software/bcftools-1.3.1/bcftools
 BGZIP=/home/conrad/Software/htslib-1.5/bgzip
 TABIX=/home/conrad/Software/htslib-1.5/tabix
-SNPSITES=/usr/bin/snp-sites
+# SNPSITES=/usr/bin/snp-sites
 
 # Set python script paths (generally don't change):
 CALLSNPS=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/call_snps_on_vcf_1.py
 COMBINEFASTASEQ=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/combine_fasta_sequences_1.py
 GETISOLATESNPS=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/get_isolate_snps_1.py
 ANNOTATESNPS=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/annotation_script_4.py
+GENERATESNPAL=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/GenerateSnpAlignment_1.py
 
 # Set project folder:
 
-PF=/home/conrad/Data/primary_project_3/reference_alignments/G49_PAO1
+PF=/home/conrad/Data/primary_project_3/reference_alignments/G55_PAO1_august_2017_isolate_list_155iso
 
 # Set printed-to-screen script text color (generally don't change):
 COLOR='\033[1;36m'
@@ -75,7 +76,7 @@ for i in *.fa; do python $COMBINEFASTASEQ $i $PF/alignments/whole_genome_consens
 cd ../alignments
 
 printf "${COLOR}Generating SNP alignment...${NC}\n"
-$SNPSITES -o snp_alignment.fa $PF/alignments/whole_genome_consensus_alignment.fa
+python $GENERATESNPAL $PF/alignments/whole_genome_consensus_alignment.fa "snp_alignment_vs_"$REFGENOME.fa 
 
 cd ../snps_called_filtered_vcf_files
 

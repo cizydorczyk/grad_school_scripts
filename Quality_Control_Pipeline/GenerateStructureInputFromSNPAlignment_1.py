@@ -5,6 +5,8 @@ from scipy.stats import fisher_exact
 
 script, input_alignment_file, input_positions_file, output_file = argv
 
+# Input positions file is a tab separated file with position\tref_base format, no header
+
 eradication_dict = {'6':'0', '7':'0', '8':'0', '10':'0', '14':'0', '17':'0', '19':'0',
 '21':'0', '23':'0', '30':'0', '36':'0', '37':'0', '53':'0', '97':'0', '130':'0', '152':'0', '160':'0',
 '180':'0', '196':'0', '200':'0', '217':'0', '225':'0', '235':'0', '251':'0', '257':'1',
@@ -58,10 +60,10 @@ print df1[0:10]
 
 df1.replace(['A', 'C', 'G', 'T'], [100, 200, 300, 400], inplace=True)
 
-print df1[0:10][0:10]
 
-df1.to_csv(path_or_buf=output_file, sep='\t')
-
+#df1.to_csv(path_or_buf=output_file, sep='\t')
+df2 = df1.ix[:,[154,155]]
+df2.to_csv(path_or_buf=output_file, sep='\t')
 # Convert dataframe into dictionary, with column name as key and list of values in each column as value:
 # columns = df1.to_dict(orient='list')
 

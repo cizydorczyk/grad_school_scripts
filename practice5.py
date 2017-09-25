@@ -1,7 +1,7 @@
 from sys import argv
 import fnmatch
 
-script, snpeff_ann_annotation, snpeff_eff_annotation, snpeff_ann_vcffile = argv
+script, snpeff_ann_annotation, snpeff_eff_annotation, snpeff_ann_vcffile, snpeff_eff_annotation_onelinepervar, snpeff_ann_annotation_onelinepervar = argv
 
 # Create table of codons:
 codons = {'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A', 'TGC':'C', 'TGT':'C', 'GAC':'D', 'GAT':'D',\
@@ -184,7 +184,8 @@ header, isolate_genotype_order = parse_vcf_header(snpeff_ann_vcffile)
 
 eff_objects = parse_eff_annotation(snpeff_eff_annotation)
 ann_objects = parse_ann_annotation(snpeff_ann_annotation)
-
+eff_oneline_objects = parse_eff_annotation(snpeff_eff_annotation_onelinepervar)
+ann_oneline_objects = parse_ann_annotation(snpeff_ann_annotation_onelinepervar)
 
 # # Number of SNPs:
 number_of_variants = len(eff_objects)
@@ -253,105 +254,87 @@ for i in variant_objects:
                 except KeyError:
                     variant_type_dict['Up/Downstream_eff_only'] += 1
 
-intergenic_count = 0
-N_only_count = 0
-synonymous = 0
-nonsynonymous = 0
-stop_gained = 0
-stop_lost = 0
+mutated_genes_dict = {}
+counted_positions = set()
+for obj in ann_oneline_objects:
+    if obj.pos not in counted_positions:
+        counted_positions.add(obj.pos)
+        if obj.geneid not in mutated_genes_dict:
+            mutated_genes_dict[obj.geneid] = 1
+        elif obj.geneid in mutated_genes_dict:
+            mutated_genes_dict[obj.geneid] += 1
+    elif obj.pos in counted_positions:
+        pass
 
-complement_DNA = {'A':'T', 'C':'G', 'G':'C', 'T':'A'}
+num_variants_dict = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0,
+10:0, 20:0, 30:0, 40:0, 50:0, 60:0, '>60':0}
 
-for i in eff_objects:
-    if "." not in i.codon:
-        alt_field = i.alt.split(',')
-        codon_field = i.codon.split(',')
-        for base in alt_field:
-            if base != 'N':
-                for pair in codon_field:
-                    if base in pair:
-                        codon_pair = pair
-                    else:
-                        print "ERROR something isn't right..."
-
-                    # else:
-                    #     base_complement = complement_DNA[base]
-                    #     #print base_complement
-                    #     if base_complement in pair:
-                    #         codon_pair = pair
-                    #     else:
-                    #         print "ERROR something isn't right..."
-                    #         print base_complement, pair, i.pos
-            # elif base is 'N':
-            #     if len(alt_field) is 1:
-            #         N_only_count += 1
-            #     else:
-            #         continue
-            # refcodon = codon_pair.split('/')[0]
-            # altcodon = codon_pair.split('/')[1]
-            #
-            # try:
-            #     refaa = codons[refcodon.upper()]
-            #     altaa = codons[altcodon.upper()]
-            #
-            #     if refaa == altaa:
-            #         synonymous += 1
-            #
-            #     elif refaa != altaa:
-            #         if refaa != '*' and altaa != '*':
-            #             nonsynonymous += 1
-            #         elif refaa != '*' and altaa == '*':
-            #             stop_gained += 1
-            #         elif refaa == '*' and altaa != '*':
-            #             stop_lost += 1
-            # except KeyError:
-            #     continue
-
-    elif "." in i.codon:
-        intergenic_count += 1
-
-print "intergenic_count", intergenic_count
-print "N_only_count", N_only_count
-print "synonymous", synonymous
-print "nonsynonymous", nonsynonymous
-print "stop_gained", stop_gained
-print "stop_lost", stop_lost
+for i in mutated_genes_dict:
+    if mutated_genes_dict[i] == 1:
+        num_variants_dict[1] += 1
+    elif mutated_genes_dict[i] == 2:
+        num_variants_dict[2] += 1
+    elif mutated_genes_dict[i] == 3:
+        num_variants_dict[3] += 1
+    elif mutated_genes_dict[i] == 4:
+        num_variants_dict[4] += 1
+    elif mutated_genes_dict[i] == 5:
+        num_variants_dict[5] += 1
+    elif mutated_genes_dict[i] == 6:
+        num_variants_dict[6] += 1
+    elif mutated_genes_dict[i] == 7:
+        num_variants_dict[7] += 1
+    elif mutated_genes_dict[i] == 8:
+        num_variants_dict[8] += 1
+    elif mutated_genes_dict[i] == 9:
+        num_variants_dict[9] += 1
+    elif mutated_genes_dict[i] == 10:
+        num_variants_dict[10] += 1
+    elif 10 < mutated_genes_dict[i] <= 20:
+        num_variants_dict[20] += 1
+    elif 20 < mutated_genes_dict[i] <= 30:
+        num_variants_dict[30] += 1
+    elif 30 < mutated_genes_dict[i] <= 40:
+        num_variants_dict[40] += 1
+    elif 40 < mutated_genes_dict[i] <= 50:
+        num_variants_dict[50] += 1
+    elif 50 < mutated_genes_dict[i] <= 60:
+        num_variants_dict[60] += 1
+    elif 60 < mutated_genes_dict[i]:
+        num_variants_dict['>60'] += 1
 
 
-#     if "." not in i.codon:
-#         codon_field = i.codon.split(',')
-#         #print codon_field
-#     elif "." in i.codon:
-#         #print i.pos, i.effect, i.codon
-#         intergenic_count += 1
-#     else:
-#         print i.pos, i.effect, i.codon
-# print intergenic_count
-
-    # if i.aa is not ".":
-    #     refcodon = i.codon.split('/')[0]
-    #     altcodon = i.codon.split('/')[1]
-    #     refaa = codons[refcodon.upper()]
-    #     altaa = codons[altcodon.upper()]
+# To test if the number of variant positions as summed from mutated genes dict
+# is equal to total number of variant positions (counting each mutated positions
+# once, even if it has multiple alleles):
+# sum_ = 0
+# for i in sorted(mutated_genes_dict):
+#     sum_ += mutated_genes_dict[i]
+#     if mutated_genes_dict[i] > 1:
+#         print i, mutated_genes_dict[i]
+# print sum_
 
 
-
-# # Print summary to terminal:
-# print "Number of variants:", number_of_variants
-# print "\n"
-# print "Number of N variants (sum of uniN, biN, trin, & tetraN):", total_no_of_N_variants
-# print "Number of uniN variants (eg. Ref=A, Alt=N):", uniN
-# print "Number of biN variants (eg. Ref=A, Alt=T,N):", biN
-# print "Number of triN variants (eg. Ref=A, Alt=T,C,N):", triN
-# print "Number of tetraN variants (eg. Ref=A, Alt=T,C,G,N):", tetraN
-# print "\n"
-# print "Number of biallelic variants (eg. Ref=A, Alt=T):", biallelic_snps
-# print "Number of multiallelic variants (sum of tri & tetra allelics):", multiallelic_snps
-# print "Number of triallelic variants (eg. Ref=A, Alt=T,C):", triallelic_snps
-# print "Number of tetraellelic variants (eg. Ref=A, Alt=T,C,G):", tetraellelic_snps
-# print "\n"
-# print "Number of singeltons (no 'N' singletons):", singletons
-# print "\n"
-# print "######### SnpEff Annotations Summary #########"
-# for i in sorted(variant_type_dict):
-#     print "Number of " + i, variant_type_dict[i]
+# Print summary to terminal:
+print "Number of variants:", number_of_variants
+print "\n"
+print "Number of N variants (sum of uniN, biN, trin, & tetraN):", total_no_of_N_variants
+print "Number of uniN variants (eg. Ref=A, Alt=N):", uniN
+print "Number of biN variants (eg. Ref=A, Alt=T,N):", biN
+print "Number of triN variants (eg. Ref=A, Alt=T,C,N):", triN
+print "Number of tetraN variants (eg. Ref=A, Alt=T,C,G,N):", tetraN
+print "\n"
+print "Number of biallelic variants (eg. Ref=A, Alt=T):", biallelic_snps
+print "Number of multiallelic variants (sum of tri & tetra allelics):", multiallelic_snps
+print "Number of triallelic variants (eg. Ref=A, Alt=T,C):", triallelic_snps
+print "Number of tetraellelic variants (eg. Ref=A, Alt=T,C,G):", tetraellelic_snps
+print "\n"
+print "Number of singeltons (no 'N' singletons):", singletons
+print "\n"
+print "######### SnpEff Annotations Summary #########"
+for i in sorted(variant_type_dict):
+    print "Number of " + i, variant_type_dict[i]
+print "\n"
+print "######### Numbers of genes/intergenic regions with X mutations #########"
+for i in sorted(num_variants_dict):
+    print str(i) + " mutations:", num_variants_dict[i]

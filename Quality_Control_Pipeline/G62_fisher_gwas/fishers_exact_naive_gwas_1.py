@@ -3,7 +3,7 @@ from collections import OrderedDict
 import pandas as pd
 from scipy.stats import fisher_exact
 
-script, input_alignment_file, input_positions_file, output_file = argv
+script, input_alignment_file, input_positions_file, output_file, output_contingency_tables = argv
 
 eradication_dict = {'6':'0', '7':'0', '8':'0', '10':'0', '14':'0', '17':'0', '19':'0',
 '21':'0', '23':'0', '30':'0', '36':'0', '37':'0', '53':'0', '97':'0', '130':'0', '152':'0', '160':'0',
@@ -40,74 +40,51 @@ with open(input_alignment_file, 'r') as infile1:
         if line.startswith(">"):
             fasta_seq[line.strip()[1:]] = list(next(infile1).strip())
 
-# Create list of high quality positions:
+# Create list of positions in reference, and reference sequence:
 positions_list = []
-positions_str_list = []
-
+reference = ''
 with open(input_positions_file, 'r') as infile2:
     for line in infile2:
         if not line.startswith("Position"):
-            positions_list.append(int(line.strip().split('\t')[0]))
-            positions_str_list.append(line.strip().split('\t'[0]))
+			reference += line.strip().split('\t')[1]
+			positions_list.append(int(line.strip().split('\t')[0]))
+
+# convert snp sequences to 0 (reference base) and 1 (alt base):
+snp_matrix_dict = {}
+for i in fasta_seq:
+	sequence = ''
+	for j in range(0,len(reference)):
+		if reference[j] == fasta_seq[i][j]:
+			sequence += '0'
+		else:
+			sequence += '1'
+	snp_matrix_dict[i] = list(sequence)
 
 # Turn sequence dictionary into dataframe, with high quality positions as the column names:
-df1 = pd.DataFrame.from_dict(fasta_seq, orient='index')
+df1 = pd.DataFrame.from_dict(snp_matrix_dict, orient='index')
 df1.columns = positions_list
 
-print df1[0:10]
-
-df1.replace(['A', 'C', 'G', 'T'], [100, 200, 300, 400], inplace=True)
-
-print df1[0:10][0:10]
-
-df1.to_csv(path_or_buf=output_file, sep='\t')
-
-# Convert dataframe into dictionary, with column name as key and list of values in each column as value:
-# columns = df1.to_dict(orient='list')
-
-
-
-# columns2 = {}
-# for i in sorted(columns):
-#     iset = set(columns[i])
-#     isetlist = list(iset)
-#     new_list = []
-#     if len(isetlist) == 2:
-#         # print "lenset 2"
-#         for j in columns[i]:
-#             if isetlist[0] == j:
-#                 new_list.append(0)
-#             else:
-#                 new_list.append(1)
-#     elif len(isetlist) == 3:
-#         # print "lenset 3"
-#         for j in columns[i]:
-#             if isetlist[0] == j:
-#                 new_list.append(0)
-#             elif isetlist[1] == 1:
-#                 new_list.append(1)
-#             else:
-#                 new_list.append(2)
-#     elif len(isetlist) == 4:
-#         # print "lenset 4"
-#         for j in columns[i]:
-#             if isetlist[0] == j:
-#                 new_list.append(0)
-#             elif isetlist[1] == j:
-#                 new_list.append(1)
-#             elif isetlist[2] == j:
-#                 new_list.append(2)
-#             else:
-#                 new_list.append(3)
-#
-#     columns2[i] = new_list
-#
-# for i in sorted(columns2):
-#     print i, columns2[i]
+df1['Phenotype'] = pd.Series(eradication_dict)
 
 # with open(output_file, 'w') as outfile1:
-#     outfile1.write('\t' + '\t'.join(positions_str_list) + '\n')
-#     to_write = []
-#     for i in sorted(columns2):
-#         to_write.append(str(i) + '\t' + '\t'.join(columns2[i]) + '\n')
-#     outfile1.write(to_write)
+output_list = []
+output_contingency = []
+
+for i in positions_list:
+	tab = pd.crosstab(df1["Phenotype"] == '1', df1[i] == '1')
+	output_contingency.append(tab.to_string())
+	print tab
+	try:
+		oddsratio, p_value = fisher_exact(tab)
+		output_list.append(str(i) + '\t' + str(oddsratio) + '\t' + str(p_value))
+	except ValueError:
+		oddsratio = "NA"
+		p_value = "NA"
+		output_list.append(str(i) + '\t' + oddsratio + '\t' + p_value)
+
+with open(output_file, 'w') as outfile1:
+	outfile1.write('SNP' + '\t' + 'oddsratio' + '\t' + 'p_value' + '\n')
+	outfile1.write('\n'.join(output_list))
+
+with open(output_contingency_tables, 'w') as outfile2:
+	outfile2.write('\n'.join(output_contingency))
