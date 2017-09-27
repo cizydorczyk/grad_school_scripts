@@ -104,10 +104,10 @@ print len(acc_fam_fasta_records)
 
 ############# Write output files ##############
 
-outpath = outputdir + "core_fam_faa_records"
+outpath = outputdir + "core_fam_ffn_records"
 os.makedirs(outpath)
 
-outpath2 = outputdir + "acc_fam_faa_records"
+outpath2 = outputdir + "acc_fam_ffn_records"
 os.makedirs(outpath2)
 
 for corenumber, genefam in itertools.izip(core_fam_number, core_fam_fasta_records):
