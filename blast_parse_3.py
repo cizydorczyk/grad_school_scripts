@@ -25,19 +25,19 @@ for lnum, line in enumerate(contents):
             contig_num = line.strip().split(' ')[-1]
             query_list.append(contig_num)
             for line in contents:
-                if line.startswith(contig_num + '\t') and "Pseudomonas aeruginosa" in line:
+                if line.startswith(contig_num + '\t') and "Escherichia coli" in line:
                     fill_color.append("deepskyblue")
                     out_color.append("blue")
                     break
 
             else:
-                fill_color.append("yellow")
-                out_color.append("orange")
+                fill_color.append("red")
+                out_color.append("red4")
 
         else:
             query_list.append(line.strip().split(' ')[-1])
-            fill_color.append("yellow")
-            out_color.append("orange")
+            fill_color.append("red")
+            out_color.append("red4")
 
 data = collections.OrderedDict([('Filename',query_list), ('Length',length_list), ('Coverage',coverage_list), ('Color',fill_color), ('Outline',out_color)])
 

@@ -1,43 +1,35 @@
-from sys import argv
-import os.path
+# import the algorithm
+from fastlmm.association import single_snp
 
-script, krakensummary, output = argv
-isolate = krakensummary.strip().split('_')[0]
+# set up data
+##############################
+bed_fn = "/home/conrad/Data/primary_project_3/gwas/H19_indels_plink/indels_binary"
+pheno_fn = "/home/conrad/Data/primary_project_3/gwas/H19_indels_plink/indels.phe"
 
-class KrakenLine(object):
-	def __init__(self, percent, numrootreads, numtaxonreads, rankcode, ncbitaxid, sciname, record):
-		self.percent = percent
-		self.numrootreads = numrootreads
-		self.numtaxonreads = numtaxonreads
-		self.rankcode = rankcode
-		self.ncbitaxid = ncbitaxid
-		self.sciname = sciname
-		self.record = record
+# run gwas
+###################################################################
+results_df = single_snp(bed_fn,  pheno_fn, leave_out_one_chrom=False, count_A1=True)
 
-krakenline_objects = []
-with open(krakensummary, 'r') as infile1:
-	for line in infile1:
-		temp1 = line.strip().split('\t')
-		temp2 = temp1[5].strip()
+# manhattan plot
+import fastlmm.util.util as flutil
+flutil.manhattan_plot(results_df.as_matrix(["Chr", "ChrPos", "PValue"]),pvalue_line=1e-5,xaxis_unit_bp=False)
 
-		krakenline_objects.append(KrakenLine(float(temp1[0]), int(temp1[1]), int(temp1[2]), temp1[3], int(temp1[4]), temp2, temp1))
+# # qq plot
+from fastlmm.util.stats import plotp
+plotp.qqplot(results_df["PValue"].values, xlim=[0,5], ylim=[0,5], fileout="test_qq")
 
-for i in krakenline_objects:
-	if i.sciname == 'Pseudomonas aeruginosa':
-		perc_pae = i.percent
-	elif i.sciname == 'unclassified':
-		perc_unclassified = i.percent
+# from pysnptools.snpreader import Ped
+# from pysnptools.snpreader import Pheno
+# from pysnptools.snpreader import wrap_plink_parser
 
-perc_other = 100 - perc_pae - perc_unclassified
+# # Load snp data:
+# print "Loading variant data..."
+# ped_file = Ped(bed_fn)
+# print "Loading phenotype data..."
+# pheno_fn = Pheno(pheno_fn)
 
-print 'Percent Pae: ', perc_pae
-print 'Percent Other: ', perc_other
-print 'Percent Unclassified: ', perc_unclassified
+# # Run basic association test:
+# print "Running FaST-LMM single_snp test..."
+# results_df = single_snp(test_snps=ped_file, pheno=pheno_fn, leave_out_one_chrom=True)
 
-if not os.path.isfile(output):
-	with open(output, 'a+') as outfile1:
-		outfile1.write('Isolate' + '\t' + 'Percent_Pae' + '\t' + 'Percent_Other' + '\t' + 'Percent_Unclass.' + '\n')
-		outfile1.write(isolate + '\t' + str(perc_pae) + '\t' + str(perc_other) + '\t' + str(perc_unclassified) + '\n')
-elif os.path.isfile(output):
-	with open(output, 'a+') as outfile1:
-		outfile1.write(isolate + '\t' + str(perc_pae) + '\t' + str(perc_other) + '\t' + str(perc_unclassified) + '\n')
+# print results_df

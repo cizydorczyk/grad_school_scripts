@@ -8,6 +8,7 @@ script, inputfile = argv
 with open(inputfile, 'r') as infile:
     list1 = list(infile)
 
+dict1 = {}
 for num, i in enumerate(list1):
     if i.startswith(">"):
         #print i,
@@ -22,3 +23,5 @@ for num, i in enumerate(list1):
             except IndexError:
                 break
         dict1[i] = sequence
+
+print dict1

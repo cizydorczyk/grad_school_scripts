@@ -1,0 +1,12 @@
+1-Identical-1
+2-Singleton-2
+3-Biallelic-3
+4-Triallelic-4
+5-Tetrallelic-5
+6-Singleton_N_+_monoallelic-6
+7-N_+_monoallelic-7
+8-N_+_singleton-8
+9-N_+_biallelic-9
+10-N_+_triallelic-10
+11-N_+_tetrallelic-11
+12-monoallelic_N-12

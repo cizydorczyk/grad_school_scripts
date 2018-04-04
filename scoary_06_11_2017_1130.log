@@ -1,0 +1,7 @@
+11/06/2017 11:30:39 AM    ==== Scoary started ====
+11/06/2017 11:30:39 AM    Command: /home/conrad/anaconda2/bin/scoary
+11/06/2017 11:30:39 AM    CRITICAL:
+Traceback (most recent call last):
+  File "/home/conrad/anaconda2/lib/python2.7/site-packages/scoary/methods.py", line 127, in main
+    sys.exit(("The following arguments are required: -t/--traits, "
+SystemExit: The following arguments are required: -t/--traits, -g/--genes

@@ -15,17 +15,25 @@ positions_list = []
 
 with open(positions_file, 'r') as infile2:
     for line in infile2:
-        if not line.startswith("Position"):
-            positions_list.append(line.strip().split('\t')[0])
+        positions_list.append(line.strip().split('-')[1])
 
-#reference = infile_dict[">PAO1"]
-
+reference = infile_dict[">REF"]
 
 # Convert reference list into a series and label positions with high quality positions list:
-#ref_series = pandas.Series(reference, index=positions_list)
+ref_series = pandas.Series(reference, index=positions_list)
 
 # Delete reference sequence from infile_dict:
-#del infile_dict[">PAO1"]
+del infile_dict[">REF"]
+del infile_dict[">528"]
+del infile_dict[">529"]
+del infile_dict[">530"]
+del infile_dict[">531"]
+del infile_dict[">532"]
+del infile_dict[">548"]
+del infile_dict[">549"]
+del infile_dict[">550"]
+del infile_dict[">538"]
+del infile_dict[">542"]
 
 # Turn sequence dictionary into dataframe, with high quality positions as the column names:
 df1 = pandas.DataFrame.from_dict(infile_dict, orient='index')
@@ -81,37 +89,42 @@ print 'multiallelic snps', len(multiallelic)
 
 # To remove any of the categories (n_tons, singletons, identicals, or n_var, just change what is being dropped:
 
-#df1.drop(n_tons, axis=1, inplace=True)
-#ref_series.drop(n_tons, axis=0, inplace=True)
+df1.drop(n_tons, axis=1, inplace=True)
+ref_series.drop(n_tons, axis=0, inplace=True)
 
 df1.drop(identicals, axis=1, inplace=True)
-#ref_series.drop(identicals, axis=0, inplace=True)
+ref_series.drop(identicals, axis=0, inplace=True)
 
-# df1.drop(singletons, axis=1, inplace=True)
-# df1.drop(multiallelic, axis=1, inplace=True)
-#df1.drop(n_var, axis=1, inplace=True)
+df1.drop(singletons, axis=1, inplace=True)
+ref_series.drop(singletons, axis=0, inplace=True)
 
-# for i in n_tons:
-#     positions_list.remove(i)
+df1.drop(multiallelic, axis=1, inplace=True)
+ref_series.drop(multiallelic, axis=0, inplace=True)
+
+df1.drop(n_var, axis=1, inplace=True)
+ref_series.drop(n_var, axis=0, inplace=True)
+
+for i in n_tons:
+    positions_list.remove(i)
 
 for i in identicals:
     positions_list.remove(i)
 
-# for i in singletons:
-#     positions_list.remove(i)
+for i in singletons:
+    positions_list.remove(i)
 
-# for i in multiallelic:
-#     positions_list.remove(i)
+for i in multiallelic:
+    positions_list.remove(i)
 
-# for i in n_var:
-#     positions_list.remove(i)
+for i in n_var:
+    positions_list.remove(i)
 
-print 'total positions removed', len(identicals)
+print 'total positions removed', len(identicals) + len(n_tons) + len(singletons) + len(multiallelic) + len(n_var)
 print 'new total number of columns', len(df1.columns)
 
 # Convert dataframe and reference sequence (a series) to a dictionary and list, respectively (for easier writing to file):
 df1_dict = df1.transpose().to_dict(orient='list')
-#ref_list = list(ref_series)
+ref_list = list(ref_series)
 
 # Write reference sequence and isolate sequences to file:
 with open(output_fasta, 'w') as outfile:
@@ -128,5 +141,8 @@ with open(output_positions, 'w') as outfile2:
 
 # Write removed positions to file:
 with open(removed_positions_file, 'w') as outfile3:
-    #outfile3.write('\n'.join(n_tons) + '\n')
-    outfile3.write('\n'.join(identicals))
+    outfile3.write('\n'.join(n_tons) + '\n')
+    outfile3.write('\n'.join(identicals) + '\n')
+    outfile3.write('\n'.join(singletons) + '\n')
+    outfile3.write('\n'.join(multiallelic) + '\n')
+    outfile3.write('\n'.join(n_var) + '\n')

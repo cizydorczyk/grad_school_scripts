@@ -1,0 +1,16 @@
+python ~/grad_school_scripts/H11/fasta_to_vcf_1.py SNPA
+lignment.fa FinalSNPList.txt ~/Data/primary_project_3/reference_alignments/reference_alignment_vs_LESB58_from_Julio/vcfs_from_snp_alignmnet/
+
+for i in *.vcf; do bgzip --threads 8 $i; done
+
+for i in *.gz; do tabix $i; done
+
+for i in *.gz; do bcftools consensus -f ~/Data/primary_project_3/reference_alignments/reference_alignment_vs_LESB58_from_Julio/reference.fasta -o ~/Data/primary_project_3/reference_alignments/reference_alignment_vs_LESB58_from_Julio/whole_genome_consensus_sequences/$i"_wg_consensus.fasta" $i; done
+
+for i in $(cat ~/Data/
+primary_project_3/isolate_lists/august_2017_isolate_list.txt); do mv $i".vcf.gz_wg_consensus.fasta" $i"_wg_lesb58_seq.fasta"; done
+
+for i in $(cat ~/Data/primary_project_3/isolate_lists/august_2017_isolate_list.txt); do sed -i "1s/.*/>$i/" $i"_wg_lesb58_seq.fasta"; done
+
+for i in $(cat ~/Data/
+primary_project_3/isolate_lists/august_2017_isolate_list.txt); do python ~/grad_school_scripts/Quality_Control_Pipeline/combine_fasta_sequences_1.py $i"_wg_lesb58_seq.fasta" lesb58_155iso_aln.fasta; done

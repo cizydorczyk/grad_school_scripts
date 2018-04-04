@@ -16,8 +16,9 @@ import os
 import numpy as np
 import pandas as pd
 from scipy.stats import fisher_exact
+import itertools
 
-script, isolate_list, orthologs_file,  genome_faa_files_list, outputdir = argv
+script, isolate_list, orthologs_file, outputdir = argv
 
 eradication_dict = {'6':'0', '7':'0', '8':'0', '10':'0', '14':'0', '17':'0', '19':'0',
 '21':'0', '23':'0', '30':'0', '36':'0', '37':'0', '53':'0', '97':'0', '130':'0', '152':'0', '160':'0',
@@ -40,6 +41,7 @@ eradication_dict = {'6':'0', '7':'0', '8':'0', '10':'0', '14':'0', '17':'0', '19
 '570':'0', '571':'0', '5721':'1', '5732':'1', '5733':'1', '575':'0', '577':'0', '578':'0',
 '580':'1', '581':'1', '583':'1'}
 
+# Parse input files:
 isolates_list = []
 with open(isolate_list, 'r') as infile1:
     for line in infile1:
@@ -50,6 +52,7 @@ with open(orthologs_file, 'r') as infile2:
     for line in infile2:
         gene_families.append(line.strip().split('\t'))
 
+# Make output directory:
 outpath = outputdir + "fishers_exact_test_gene_presence_absence"
 os.makedirs(outpath)
 
@@ -58,7 +61,7 @@ gene_presence_absence_dict = {}
 for i in isolates_list:
     gene_presence_absence_dict[i] = []
 
-# Main algorithm:
+# Convert gene presence/absence to binary data:
 for genefam in gene_families:
     # Get isolates present in family:
     isolates_present = set()
@@ -74,30 +77,204 @@ for genefam in gene_families:
         else:
             gene_presence_absence_dict[isolate].append('0')
 
+# Convert binary data to dataframe:
 df1 = pd.DataFrame.from_dict(gene_presence_absence_dict, orient="index")
+# Name dataframe columns (by family number - same order as in orthologs file)""
 fam_names = range(1, len(gene_families) + 1)
 df1.columns = fam_names
+# Add phenotypes column to dataframe:
 df1['Phenotype'] = pd.Series(eradication_dict)
 
+
+
+
 # Run fishers exact test:
-output_list = []
-output_contingency = []
+to_write_all_contingency_tables = []
+to_write_good_contingency_tables = []
+to_correct_contingency_tables = set()
 
+# Get raw pvalues using Fisher's exact test:
+rawpvalues = []
+rawoddsratios = []
+good_fam_names = []
+
+# To_drop not currently used for anything, but it's a list of fam names that are not testable:
+to_drop =  []
+
+# Identify testable gene families:
 for i in fam_names:
-	tab = pd.crosstab(df1["Phenotype"] == '1', df1[i] == '1')
-	output_contingency.append(tab.to_string())
-	print tab
-	try:
-		oddsratio, p_value = fisher_exact(tab)
-		output_list.append(str(i) + '\t' + str(oddsratio) + '\t' + str(p_value))
-	except ValueError:
-		oddsratio = "NA"
-		p_value = "NA"
-		output_list.append(str(i) + '\t' + oddsratio + '\t' + p_value)
+    tab = pd.crosstab(df1["Phenotype"] == '1', df1[i] == '1')
+    to_write_all_contingency_tables.append(tab.to_string())
 
-with open(os.path.join(outpath, "fishers_exact_naive_results.txt"), 'w') as outfile1:
-	outfile1.write('SNP' + '\t' + 'oddsratio' + '\t' + 'p_value' + '\n')
-	outfile1.write('\n'.join(output_list))
+    if tab.shape == (2,2):
+        temp1 = tab.values.tolist()
+        temp2 = temp1[0] + temp1[1]
+        if temp2.count(0) == 1:
+            to_drop.append(i)
+        else:
+            # Run fisher's exact test:
+            oddsratio, p_value = fisher_exact(tab)
+            rawpvalues.append(p_value)
+            rawoddsratios.append(oddsratio)
+            good_fam_names.append(i)
 
-with open(os.path.join(outpath, "fishers_exact_contingency_tables.txt"), 'w') as outfile2:
-	outfile2.write('\n'.join(output_contingency))
+            to_write_good_contingency_tables.append(tab.to_string())
+
+            # Get effective number of contingency tables (for p-value correction):
+            temp3 = map(str, temp2)
+            temp4 =  '.'.join(temp3)
+            to_correct_contingency_tables.add(temp4)
+    else:
+        to_drop.append(i)
+
+
+
+df2 = df1.drop(to_drop, axis=1)
+
+# Get number of gene profiles:
+gene_profile_dict = df2.to_dict(orient="list")
+
+set_gene_profiles = set()
+for i in gene_profile_dict:
+    set_gene_profiles.add(''.join(gene_profile_dict[i]))
+
+# Get pvalue correction values and print to terminal:
+strict_bonferroni_correction = len(good_fam_names)
+gene_fam_correction = len(set_gene_profiles)
+contingency_table_correction = len(to_correct_contingency_tables)
+
+print "Number of total gene families: ", len(gene_families)
+print "Number of gene families: ", strict_bonferroni_correction
+print "Number of gene profiles: ", gene_fam_correction
+print "Number of contingency table profiles: ", contingency_table_correction
+
+# Correct pvalues:
+strict_bonferroni_pvalues = []
+gene_fam_pvalues = []
+contingency_table_pvalues = []
+
+for i in rawpvalues:
+    strict_bonferroni_pvalues.append(i*strict_bonferroni_correction)
+    gene_fam_pvalues.append(i*gene_fam_correction)
+    contingency_table_pvalues.append(i*contingency_table_correction)
+
+# Write output:
+to_write = []
+to_write.append('Family_Number' + '\t' + 'Raw_Odds_Ratio' + '\t' + 'Raw_p-value' + '\t' + 'Strict_BF_p-value' + '\t' + 'Gene_Profile_BF_p-value' + '\t' + 'Contingency_Table_BF_p-value')
+for i, j, k, l, m, n in itertools.izip(good_fam_names, rawoddsratios, rawpvalues, strict_bonferroni_pvalues, gene_fam_pvalues, contingency_table_pvalues):
+    to_write.append(str(i) + '\t' + str(j) + '\t' + str(k) + '\t' + str(l) + '\t' + str(m) + '\t' + str(n))
+
+with open(os.path.join(outpath, "fishers_exact_results.txt"), 'w') as outfile1:
+    outfile1.write('\n'.join(to_write))
+
+with open(os.path.join(outpath, "good_contingency_tables.txt"), 'w') as outfile2:
+    outfile2.write('\n'.join(to_write_good_contingency_tables))
+
+with open(os.path.join(outpath, "raw_contingency_tables.txt"), 'w') as outfile2:
+    outfile2.write('\n'.join(to_write_all_contingency_tables))
+
+df1_output = os.path.join(outpath, "raw_gene_presence_absence_matrix.txt")
+df2_output = os.path.join(outpath, "filtered_gene_presence_absence_matrix.txt")
+df1.to_csv(path_or_buf=df1_output, sep='\t')
+df2.to_csv(path_or_buf=df2_output, sep='\t')
+
+    # output_contingency.append(tab.to_string())
+    # # Get number of identical tables:
+    # temp1 = tab.values.tolist()
+    # temp2 = temp1[0]
+    # temp3 = temp1[1]
+    # temp4 = temp2 + temp3
+    # # Convert all ints in temp4 list to string:
+    # temp5 = map(str, temp4)
+    # temp6 = ''.join(temp5)
+    # output_contingency_strs.add(temp6)
+
+
+
+
+    # Run fisher's exact test:
+    # try:
+    #     oddsratio, p_value = fisher_exact(tab)
+    #     rawpvalues.append(p_value)
+    #     rawoddsratios.append(oddsratio)
+    # except ValueError:
+    #     oddsratio = "NA"
+    #     p_value = "NA"
+    #     rawpvalues.append(p_value)
+    #     rawoddsratios.append(oddsratio)
+
+
+
+
+
+# # Get pvalue corrections:
+# # print len(fam_names)
+# strict_bonferroni_correction = len(fam_names)
+# # print len(set_gene_profiles)
+# gene_fam_correction = len(set_gene_profiles)
+# # print len(output_contingency_strs)
+# contingency_tables_correction = len(output_contingency_strs)
+#
+# # Correct pvalues:
+# strict_bonferroni_pvalues = []
+# for i, j in itertools.izip(rawpvalues, rawoddsratios):
+#     if i == "NA":
+#         strict_bonferroni_pvalues.append("NA")
+#     elif j == 'inf':
+#         strict_bonferroni_pvalues.append("NA")
+#     elif j == '0.0':
+#         strict_bonferroni_pvaules.append("NA")
+#     else:
+#         corrected_pvalue = i*strict_bonferroni_correction
+#         strict_bonferroni_pvalues.append(corrected_pvalue)
+#
+# gene_fam_pvalues =[]
+# for i, j in itertools.izip(rawpvalues, rawoddsratios):
+#     if i == "NA":
+#         gene_fam_pvalues.append("NA")
+#     elif j == 'inf':
+#         gene_fam_pvalues.append("NA")
+#     elif j == '0.0':
+#         gene_fam_pvalues.append("NA")
+#     else:
+#         corrected_pvalue = i*strict_bonferroni_correction
+#         gene_fam_pvalues.append(corrected_pvalue)
+#
+# contingency_tables_pvalues = []
+# for i, j in itertools.izip(rawpvalues, rawoddsratios):
+#     if i == "NA":
+#         contingency_tables_pvalues.append("NA")
+#     elif j == 'inf':
+#         contingency_tables_pvalues.append("NA")
+#     elif j == '0.0':
+#         contingency_tables_pvalues.append("NA")
+#     else:
+#         corrected_pvalue = i*strict_bonferroni_correction
+#         contingency_tables_pvalues.append(corrected_pvalue)
+#
+# # strict_bonferroni_pvalues = []
+# # for i, j in itertools.izip(rawpvalues, rawoddsratios):
+# #     if i != "NA" and (j != "inf" or j != '0.0'):
+# #         corrected_pvalue = i*strict_bonferroni_correction
+# #         strict_bonferroni_pvalues.append(corrected_pvalue)
+# #     else:
+# #         strict_bonferroni_pvalues.append("NA")
+# #
+# # gene_fam_pvalues = []
+# # for i, j in itertools.izip(rawpvalues, rawoddsratios):
+# #     if i != "NA" and (j != "inf" or j != '0.0'):
+# #         corrected_pvalue = i*gene_fam_correction
+# #         gene_fam_pvalues.append(corrected_pvalue)
+# #     else:
+# #         gene_fam_pvalues.append("NA")
+# #
+# # contingency_tables_pvalues = []
+# # for i, j in itertools.izip(rawpvalues, rawoddsratios):
+# #     if i != "NA" and (j != "inf" or j != '0.0'):
+# #         corrected_pvalue = i*contingency_tables_correction
+# #         contingency_tables_pvalues.append(corrected_pvalue)
+# #     else:
+# #         contingency_tables_pvalues.append("NA")
+#
+
+#

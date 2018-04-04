@@ -1,212 +1,55 @@
 from sys import argv
+import pandas as pd
 
-script, list_of_isolate_snps, all_snps, output_1, output_2, output_3, output_4, output_5, output_6, output_7 = argv
+script, input_kraken_report, output_tsv = argv
 
+isolate_number = input_kraken_report.strip().split('_')[0]
+print isolate_number
 
-isolate_snp_files = []
-with open(list_of_isolate_snps, 'r') as infile1:
+class kraken_object(object):
+    def __init__(self, perc_reads, root_reads, taxon_reads, rank, taxid, sciname, summary):
+        self.perc_reads = perc_reads
+        self.root_reads = root_reads
+        self.taxon_reads = taxon_reads
+        self.rank = rank
+        self.taxid = taxid
+        self.sciname = sciname
+        self.summary = summary
+
+kraken_objects = []
+with open(input_kraken_report, 'r') as infile1:
     for line in infile1:
-        isolate_snp_files.append(line.strip())
+        line_ = line.strip().split('\t')
+        line_object = kraken_object(float(line_[0]), int(line_[1]), int(line_[2]), line_[3], int(line_[4]), line_[5].strip(), ", ".join(line_))
+        kraken_objects.append(line_object)
 
-all_snps_dict = {}
+sum_unclassified = 0
+sum_aeruginosa = 0
+sum_pseudomonads = 0
 
-with open(all_snps, 'r') as infile2:
-    for line in infile2:
-        line_list = line.strip().split('\t')
-        all_snps_dict[int(line_list[0])] = line_list[1]
+to_plot_species = []
+for i in kraken_objects:
+    if i.rank == "U":
+        if i.perc_reads > 0.00:
+            print i.rank, i.perc_reads, i.sciname
+            sum_unclassified += i.perc_reads
+    elif i.rank == "S":
+        if "aeruginosa" in i.sciname:
+            if i.perc_reads > 0.00:
+                print i.rank, i.perc_reads, i.sciname
+                sum_aeruginosa += i.perc_reads
+        elif "Pseudomonas" in i.sciname and "aeruginosa" not in i.sciname:
+            if i.perc_reads > 0.00:
+                print i.rank, i.perc_reads, i.sciname
+                sum_pseudomonads += i.perc_reads
+    else:
+        pass
 
+sum_other = (100-sum_unclassified-sum_aeruginosa-sum_pseudomonads)
 
+to_write = '\t'.join([str(isolate_number), str(sum_aeruginosa), str(sum_pseudomonads), str(sum_other), str(sum_unclassified)])
+print isolate_number, sum_aeruginosa, sum_pseudomonads, sum_other, sum_unclassified
 
-##############################################
-# # To count snps at ALL positions in reference genome:
-
-all_pos_counts = {}
-for i in range(1,6264405):
-    all_pos_counts[i] = 0
-
-
-for file_ in isolate_snp_files:
-    isolate_snps = []
-    with open(file_, 'r') as infile3:
-        for line in infile3:
-            if 'Position' not in line:
-                isolate_snps.append(int(line.strip().split('\t')[0]))
-    for i in isolate_snps:
-        all_pos_counts[i] += 1
-
-with open(output_1, 'w') as outfile1:
-    to_write = []
-    for i in sorted(all_pos_counts):
-        to_write.append(str(i) + '\t' + str(all_pos_counts[i]))
-    outfile1.write('\n'.join(to_write))
-
-#############################################
-# To count snps in bins of 1K:
-
-tuple_list_1k = []
-counts_dict_1k = {}
-
-for i in range(0,6300):
-    tuple_list_1k.append((i, i+1))
-    counts_dict_1k[i+1] = 0
-
-for file_ in isolate_snp_files:
-    snps = []
-    with open(file_, 'r') as infile3:
-        for line in infile3:
-            if 'Position' not in line:
-                snps.append(int(line.strip().split('\t')[0]))
-
-    print file_
-    for i in snps:
-        for min_, max_ in tuple_list_1k:
-            if i > (max_*1000):
-                continue
-            elif (min_*1000) <= i:
-                counts_dict_1k[max_] += 1
-                break
-
-print counts_dict_1k
-
-with open(output_2, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_1k):
-        to_write.append(str(i) + '\t' + str(counts_dict_1k[i]))
-    outfile1.write('\n'.join(to_write))
-
-##############################################
-# To count snps in bins of 10K:
-
-tuple_list_10k = []
-counts_dict_10k = {}
-
-for i in range(0,630):
-    tuple_list_10k.append((i, i+1))
-    counts_dict_10k[i+1] = 0
-
-for file_ in isolate_snp_files:
-    snps = []
-    with open(file_, 'r') as infile3:
-        for line in infile3:
-            if 'Position' not in line:
-                snps.append(int(line.strip().split('\t')[0]))
-
-    print file_
-    for i in snps:
-        for min_, max_ in tuple_list_10k:
-            if i > (max_*10000):
-                continue
-            elif (min_*10000) <= i:
-                counts_dict_10k[max_] += 1
-                break
-
-print counts_dict_10k
-
-with open(output_3, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_10k):
-        to_write.append(str(i) + '\t' + str(counts_dict_10k[i]))
-    outfile1.write('\n'.join(to_write))
-
-##############################################
-# To count snps in bins of 100K:
-
-tuple_list_100k = []
-counts_dict_100k = {}
-
-for i in range(0,63):
-    tuple_list_100k.append((i, i+1))
-    counts_dict_100k[i+1] = 0
-
-for file_ in isolate_snp_files:
-    snps = []
-    with open(file_, 'r') as infile3:
-        for line in infile3:
-            if 'Position' not in line:
-                snps.append(int(line.strip().split('\t')[0]))
-
-    print file_
-    for i in snps:
-        for min_, max_ in tuple_list_100k:
-            if i > (max_*100000):
-                continue
-            elif (min_*100000) <= i:
-                counts_dict_100k[max_] += 1
-                break
-
-print counts_dict_100k
-
-with open(output_4, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_100k):
-        to_write.append(str(i) + '\t' + str(counts_dict_100k[i]))
-    outfile1.write('\n'.join(to_write))
-
-##############################################
-# To count distribution of snps in reference genome:
-# Note this is not the same as below; this gets the number mutated sites per
-# X K of the reference genome, but only counts each mutated position ONCE,
-# rather than getting the total number of isolates with a SNP at each site.
-
-tuple_list1k = []
-counts_dict_1k = {}
-
-for i in range(0,6300):
-    tuple_list1k.append((i, i+1))
-    counts_dict_1k[i+1] = 0
-
-tuple_list10k = []
-counts_dict_10k = {}
-
-for i in range(0,630):
-    tuple_list10k.append((i, i+1))
-    counts_dict_10k[i+1] = 0
-
-tuple_list100k = []
-counts_dict_100k = {}
-
-for i in range(0,63):
-    tuple_list100k.append((i, i+1))
-    counts_dict_100k[i+1] = 0
-
-for i in snps:
-    for min_, max_ in tuple_list_1k:
-        if i > (max_*1000):
-            continue
-        elif (min_*1000) <= i:
-            counts_dict_1k[max_] += 1
-            break
-
-for i in snps:
-    for min_, max_ in tuple_list_10k:
-        if i > (max_*10000):
-            continue
-        elif (min_*10000) <= i:
-            counts_dict_10k[max_] += 1
-            break
-
-for i in snps:
-    for min_, max_ in tuple_list_100k:
-        if i > (max_*100000):
-            continue
-        elif (min_*100000) <= i:
-            counts_dict_100k[max_] += 1
-            break
-
-with open(output_5, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_1k):
-        to_write.append(str(i) + '\t' + str(counts_dict_1k[i]))
-    outfile1.write('\n'.join(to_write))
-
-with open(output_6, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_10k):
-        to_write.append(str(i) + '\t' + str(counts_dict_10k[i]))
-    outfile1.write('\n'.join(to_write))
-
-with open(output_7, 'w') as outfile1:
-    to_write = []
-    for i in sorted(counts_dict_100k):
-        to_write.append(str(i) + '\t' + str(counts_dict_100k[i]))
-    outfile1.write('\n'.join(to_write))
+with open(output_tsv, 'a+') as outfile1:
+    outfile1.write("Isolate" + '\t' + "%_p_aeruginosa" + '\t' + "%_pseudomonads" + '\t' + "%_other" + '\t' "%_unclassified" + '\n')
+    outfile1.write(to_write + '\n')

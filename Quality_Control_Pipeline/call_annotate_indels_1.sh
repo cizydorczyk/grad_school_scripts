@@ -3,7 +3,7 @@
 ########### REMEMBER TO SET REF GENOME LENGTH - 150 bp BELOW!!! #################
 
 # Set reference genome name:
-REFGENOME=PAO1
+REFGENOME=LESB58
 
 # Set tool paths (generally don't change):
 SAMTOOLS=/home/conrad/Software/samtools-1.3.1/samtools
@@ -16,10 +16,10 @@ INDELLIST=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/indel_list_1
 ANNOTATEINDELS=/home/conrad/grad_school_scripts/Quality_Control_Pipeline/indel_annotation_script_2.py
 
 # Set project folder:
-PF=/home/conrad/Data/primary_project_3/reference_alignments/G51_PAO1_indels
+PF=/home/conrad/Data/primary_project_3/reference_alignments/H18_lesb58_indels
 
 # Set directory with sorted, indexed bam files with read groups added (must do this prior to running this script):
-BAMINPUT=/home/conrad/Data/primary_project_3/reference_alignments/G51_PAO1_indels/sorted_indexed_bam_files_with_rg
+BAMINPUT=/home/conrad/Data/primary_project_3/reference_alignments/H18_lesb58_indels/sorted_indexed_bam_files_with_rg
 
 # Set printed-to-screen script text color (generally don't change):
 COLOR='\033[1;36m'
@@ -34,17 +34,17 @@ NC='\033[0m'
 
 cd $PF
 
-mkdir reference
+# mkdir reference_indels
 
-cp $1 $PF/reference/$REFGENOME".fasta"
-cp $3 $PF/reference/$REFGENOME"_TAB_annotation_no_blanks.txt"
-cp $4 $PF/reference/$REFGENOME"_GTF_annotation_no_blanks.txt"
+# cp $1 $PF/reference_indels/$REFGENOME".fasta"
+# cp $3 $PF/reference_indels/$REFGENOME"_TAB_annotation_no_blanks.txt"
+# cp $4 $PF/reference_indels/$REFGENOME"_GTF_annotation_no_blanks.txt"
 
 cd reference
 
-$SAMTOOLS faidx $REFGENOME".fasta"
-java -jar $PICARD CreateSequenceDictionary REFERENCE=$REFGENOME".fasta" OUTPUT=$REFGENOME".dict"
-
+# $SAMTOOLS faidx $REFGENOME".fasta"
+# java -jar $PICARD CreateSequenceDictionary REFERENCE=$REFGENOME".fasta" OUTPUT=$REFGENOME".dict"
+java -jar $PICARD CreateSequenceDictionary REFERENCE=$1 OUTPUT="reference.dict"
 cd ..
 
 mkdir raw_vcf_files
