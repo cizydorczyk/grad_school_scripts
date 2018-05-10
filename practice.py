@@ -1,35 +1,47 @@
-# import the algorithm
-from fastlmm.association import single_snp
+from sys import argv
 
-# set up data
-##############################
-bed_fn = "/home/conrad/Data/primary_project_3/gwas/H19_indels_plink/indels_binary"
-pheno_fn = "/home/conrad/Data/primary_project_3/gwas/H19_indels_plink/indels.phe"
+script, inputfile = argv
 
-# run gwas
-###################################################################
-results_df = single_snp(bed_fn,  pheno_fn, leave_out_one_chrom=False, count_A1=True)
+file_list = []
+with open(inputfile, 'r') as infile1:
+    for line in infile1:
+        file_list.append(line.strip())
 
-# manhattan plot
-import fastlmm.util.util as flutil
-flutil.manhattan_plot(results_df.as_matrix(["Chr", "ChrPos", "PValue"]),pvalue_line=1e-5,xaxis_unit_bp=False)
+req_elements = ['d', 'p', 'c', 'o', 'f', 'g']
 
-# # qq plot
-from fastlmm.util.stats import plotp
-plotp.qqplot(results_df["PValue"].values, xlim=[0,5], ylim=[0,5], fileout="test_qq")
+output_list = []
 
-# from pysnptools.snpreader import Ped
-# from pysnptools.snpreader import Pheno
-# from pysnptools.snpreader import wrap_plink_parser
+for record in file_list:
+    record_list = record.split(',')
+    
+    if len(record_list) == 7:
+        # print ','.join(record_list)
+        output_list.append(','.join(record_list))
 
-# # Load snp data:
-# print "Loading variant data..."
-# ped_file = Ped(bed_fn)
-# print "Loading phenotype data..."
-# pheno_fn = Pheno(pheno_fn)
+    elif len(record_list) < 7:
+        record_elements = []
 
-# # Run basic association test:
-# print "Running FaST-LMM single_snp test..."
-# results_df = single_snp(test_snps=ped_file, pheno=pheno_fn, leave_out_one_chrom=True)
+        for i in record_list[1:]:
+            record_elements.append(i.split('__')[0])
+        print record_elements
+        
+        # missing_elements = [i for i in req_elements if i not in record_elements]
+        
+        # for elem in missing_elements:
+        #     if elem == 'd':
+        #         record_list.insert(1, 'NA')
+        #     elif elem == 'p':
+        #         record_list.insert(2, 'NA')
+        #     elif elem == 'c':
+        #         record_list.insert(3, 'NA')
+        #     elif elem == 'o':
+        #         record_list.insert(4, 'NA')
+        #     elif elem == 'f':
+        #         record_list.insert(5, 'NA')
+        #     elif elem == 'g':
+        #         record_list.insert(6, 'NA')
+        
+        # # print ','.join(record_list)
+        # output_list.append(','.join(record_list))
 
-# print results_df
+print '\n'.join(output_list)
